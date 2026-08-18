@@ -3,93 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>아리비앤씨 간트차트</title>
+<title>아리비앤씨 프로젝트 관리</title>
 <style>
   :root{
-    --bg:#f5f6fa; --card:#fff; --border:#e2e5ec; --text:#1a1d29; --muted:#7a7f8f;
+    --bg:#f0f2f8; --card:#fff; --border:#e2e5ec; --text:#1a1d29; --muted:#8a8f9e;
     --primary:#3B5BDB; --primary-lt:#eef1fd;
-    --done:#10b981; --prog:#f59e0b; --plan:#94a3b8; --hold:#dc2626;
+    --done:#10b981; --prog:#f59e0b; --plan-c:#94a3b8; --hold:#dc2626;
+    --today:#ef4444;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  body{font-family:'Segoe UI','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text);}
-  .hdr{background:linear-gradient(135deg,#1e3a8a,#3B5BDB); color:#fff; padding:18px 28px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  body{font-family:'Pretendard','Segoe UI','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text);}
+
+  .hdr{background:linear-gradient(135deg,#111c4e,#2541b2 55%,#3B5BDB); color:#fff; padding:16px 26px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; box-shadow:0 2px 12px rgba(30,58,138,.25); position:sticky; top:0; z-index:20;}
   .hdr h1{font-size:18px; font-weight:800;}
-  .hdr .sub{font-size:12px; opacity:.8;}
-  .toolbar{display:flex; gap:10px; margin-left:auto; align-items:center; flex-wrap:wrap;}
-  select, button{padding:7px 14px; border-radius:8px; border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12); color:#fff; font-size:12.5px; cursor:pointer;}
+  .hdr .sub{font-size:11.5px; opacity:.75;}
+  .toolbar{display:flex; gap:8px; margin-left:auto; align-items:center; flex-wrap:wrap;}
+  select, button{padding:6px 13px; border-radius:8px; border:1.5px solid rgba(255,255,255,.35); background:rgba(255,255,255,.1); color:#fff; font-size:12px; cursor:pointer; font-weight:600;}
   select option{color:#1a1d29;}
-  .refresh-btn{background:#fff; color:var(--primary); font-weight:700; border:none;}
-  .mode-toggle{display:flex; border-radius:8px; overflow:hidden; border:1.5px solid rgba(255,255,255,.4);}
-  .mode-toggle button{border:none; border-radius:0; background:transparent;}
-  .mode-toggle button.on{background:#fff; color:var(--primary); font-weight:700;}
-  .status-bar{padding:8px 28px; font-size:11.5px; color:var(--muted); background:#fff; border-bottom:1px solid var(--border);}
-  .status-bar.err{color:var(--hold);}
-  .wrap{padding:20px 28px 60px;}
-  .legend{display:flex; gap:16px; margin-bottom:14px; font-size:12px; color:var(--muted); flex-wrap:wrap;}
-  .legend span{display:inline-flex; align-items:center; gap:6px;}
-  .dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
-  .proj-block{background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); margin-bottom:14px; overflow:hidden;}
-  .proj-hdr{padding:12px 18px; border-bottom:1px solid var(--border); font-weight:700; font-size:13.5px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fafbff;}
-  .proj-hdr .cat{font-size:10.5px; font-weight:600; color:var(--primary); background:var(--primary-lt); padding:2px 8px; border-radius:8px;}
+  .refresh-btn{background:#fff; color:var(--primary); font-weight:800; border:none;}
+  .seg{display:flex; border-radius:8px; overflow:hidden; border:1.5px solid rgba(255,255,255,.35);}
+  .seg button{border:none; border-radius:0; background:transparent;}
+  .seg button.on{background:#fff; color:var(--primary); font-weight:800;}
+  .today-btn{background:#fbbf24; color:#1a1d29; border:none; font-weight:800;}
+
+  .page-tabs{display:flex; gap:4px; padding:0 26px; background:#fff; border-bottom:1px solid var(--border);}
+  .page-tab{padding:12px 18px; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer; border-bottom:3px solid transparent;}
+  .page-tab.on{color:var(--primary); border-bottom-color:var(--primary);}
+  .page-tab:hover{color:var(--primary);}
+
+  .status-bar{padding:7px 26px; font-size:11px; color:var(--muted); background:#fff; border-bottom:1px solid var(--border);}
+  .status-bar.err{color:var(--hold); font-weight:700;}
+
+  .legend{display:flex; gap:14px; padding:10px 26px; background:#fff; font-size:11.5px; color:var(--muted); flex-wrap:wrap; align-items:center; border-bottom:1px solid var(--border);}
+  .legend .item{display:inline-flex; align-items:center; gap:5px; font-weight:600;}
+  .dot{width:10px; height:10px; border-radius:3px;}
+  .legend-line{width:22px; border-top:2.5px dashed #64748b;}
+  .legend-bar{width:22px; height:9px; border-radius:5px; background:linear-gradient(180deg,#5b7cf5,#3B5BDB);}
+
+  .wrap{padding:18px 26px 60px;}
+  .page{display:none;}
+  .page.on{display:block;}
+
+  .proj-block{background:var(--card); border-radius:14px; box-shadow:0 1px 4px rgba(20,30,60,.07); margin-bottom:14px; overflow:hidden; border:1px solid #edeff5;}
+  .proj-hdr{padding:13px 20px; border-bottom:1px solid var(--border); font-weight:800; font-size:14px; display:flex; align-items:center; gap:10px; cursor:pointer; background:linear-gradient(180deg,#fbfcff,#f5f7ff);}
+  .proj-hdr:hover{background:#f0f3ff;}
+  .proj-hdr .cat{font-size:10.5px; font-weight:700; color:var(--primary); background:var(--primary-lt); padding:3px 10px; border-radius:20px;}
+  .proj-hdr .cnt{font-size:11px; color:var(--muted); font-weight:600;}
   .proj-hdr .arrow{margin-left:auto; transition:transform .2s; color:var(--muted); font-size:11px;}
   .proj-hdr.closed .arrow{transform:rotate(-90deg);}
-  .gantt-body{overflow-x:auto;}
-  .gantt-body.closed{display:none;}
-  .grow{min-width:900px;}
-  .grow-row{display:grid; grid-template-columns:220px 1fr; border-bottom:1px solid #f1f2f6; align-items:center;}
-  .grow-row:last-child{border-bottom:none;}
-  .task-name{padding:9px 14px; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-right:1px solid #f1f2f6;}
-  .task-name .grp{font-size:9.5px; color:var(--muted); display:block;}
-  .track{position:relative; height:34px; margin:0 4px;}
-  .bar{position:absolute; top:8px; height:8px; border-radius:4px; opacity:.9;}
-  .bar.plan{background:repeating-linear-gradient(45deg,#c7d2fe,#c7d2fe 4px,#e0e7ff 4px,#e0e7ff 8px); top:5px; height:6px;}
-  .bar.actual{top:15px; height:10px;}
-  .bar.s-done{background:var(--done);}
-  .bar.s-prog{background:var(--prog);}
-  .bar.s-plan{background:var(--plan);}
-  .bar.s-hold{background:var(--hold);}
-  .axis{display:grid; grid-template-columns:220px 1fr; border-top:2px solid var(--border); background:#fafbff;}
-  .axis-track{position:relative; height:24px; font-size:9.5px; color:var(--muted);}
-  .axis-tick{position:absolute; top:4px; border-left:1px solid #e5e7eb; padding-left:3px;}
-  .empty{padding:60px; text-align:center; color:var(--muted);}
+
+  .gbody{overflow-x:auto;}
+  .gbody.closed{display:none;}
+  .gcanvas{position:relative;}
+
+  .axis-row{display:grid; grid-template-columns:230px 1fr; border-bottom:2px solid #dde1ee; background:#f7f8fc; position:sticky; top:0; z-index:5;}
+  .axis-label{padding:7px 14px; font-size:10.5px; font-weight:800; color:var(--muted); border-right:1px solid var(--border); display:flex; align-items:center;}
+  .axis-track{position:relative; height:28px;}
+  .axis-tick{position:absolute; top:0; height:100%; border-left:1px solid #e3e6f0; padding:6px 0 0 5px; font-size:9.5px; color:var(--muted); font-weight:700; white-space:nowrap;}
+
+  .grid-bg{position:absolute; top:0; left:230px; right:0; bottom:0; pointer-events:none; z-index:0;}
+  .grid-line{position:absolute; top:0; bottom:0; border-left:1px dashed #edeff6;}
+  .today-line{position:absolute; top:0; bottom:0; width:2px; background:var(--today); z-index:2;}
+  .today-line::after{content:'오늘'; position:absolute; top:-1px; left:4px; font-size:9px; font-weight:800; color:var(--today); background:#fff; padding:0 4px; border-radius:4px; box-shadow:0 0 0 1px var(--today);}
+
+  .cat-row{display:grid; grid-template-columns:230px 1fr; border-bottom:1px solid #eceffb; background:#fbfcff; cursor:pointer; align-items:center;}
+  .cat-row:hover{background:#f2f5ff;}
+  .cat-row .cat-name{padding:9px 14px; font-size:11.5px; font-weight:800; color:#2541b2; display:flex; align-items:center; gap:6px; border-right:1px solid #eceffb;}
+  .cat-row .cat-arrow{font-size:9px; color:var(--muted); transition:transform .15s;}
+  .cat-row.closed .cat-arrow{transform:rotate(-90deg);}
+  .cat-track{position:relative; height:30px; margin:0 6px;}
+
+  .task-list.closed{display:none;}
+  .task-row{display:grid; grid-template-columns:230px 1fr; border-bottom:1px solid #f2f3f8; align-items:center;}
+  .task-row:hover{background:#fafbff;}
+  .task-name{padding:8px 14px 8px 26px; font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-right:1px solid #f2f3f8; color:#444a5c;}
+  .task-track{position:relative; height:32px; margin:0 6px;}
+
+  .bar-plan{position:absolute; top:11px; height:0; border-top:2.2px dashed; opacity:.85;}
+  .bar-plan::before, .bar-plan::after{content:''; position:absolute; top:-3px; width:0; height:7px; border-left:2.2px dashed; opacity:.85;}
+  .bar-plan::before{left:0;} .bar-plan::after{right:0;}
+  .bar-plan.s-done{border-color:var(--done);} .bar-plan.s-done::before,.bar-plan.s-done::after{border-color:var(--done);}
+  .bar-plan.s-prog{border-color:var(--prog);} .bar-plan.s-prog::before,.bar-plan.s-prog::after{border-color:var(--prog);}
+  .bar-plan.s-plan{border-color:var(--plan-c);} .bar-plan.s-plan::before,.bar-plan.s-plan::after{border-color:var(--plan-c);}
+  .bar-plan.s-hold{border-color:var(--hold);} .bar-plan.s-hold::before,.bar-plan.s-hold::after{border-color:var(--hold);}
+
+  .bar-actual{position:absolute; top:17px; height:12px; border-radius:6px; box-shadow:0 2px 4px rgba(20,30,60,.16), inset 0 1px 0 rgba(255,255,255,.3);}
+  .bar-actual.s-done{background:linear-gradient(180deg,#2fd39a,#0da271);}
+  .bar-actual.s-prog{background:linear-gradient(180deg,#fbbf40,#e08e0a);}
+  .bar-actual.s-plan{background:linear-gradient(180deg,#b7c2d4,#8b96a8);}
+  .bar-actual.s-hold{background:linear-gradient(180deg,#f2716b,#c62b24);}
+
+  .cat-bar{position:absolute; top:9px; height:12px; border-radius:6px; background:linear-gradient(180deg,#6d87ef,#3B5BDB); box-shadow:0 2px 5px rgba(30,58,138,.25); display:flex; align-items:center; padding:0 8px; font-size:9.5px; color:#fff; font-weight:700; white-space:nowrap; overflow:hidden;}
+
+  .empty{padding:70px; text-align:center; color:var(--muted); font-size:13px; background:#fff; border-radius:14px;}
+
+  .task-table{width:100%; border-collapse:collapse; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 1px 4px rgba(20,30,60,.07);}
+  .task-table th{background:#f7f8fc; padding:11px 14px; font-size:11.5px; font-weight:800; color:var(--muted); text-align:left; border-bottom:2px solid var(--border); white-space:nowrap;}
+  .task-table td{padding:10px 14px; font-size:12px; border-bottom:1px solid #f2f3f8;}
+  .task-table tr:hover td{background:#fafbff;}
+  .status-pill{display:inline-block; padding:3px 10px; border-radius:20px; font-size:10.5px; font-weight:700; color:#fff;}
+  .status-pill.s-done{background:var(--done);}
+  .status-pill.s-prog{background:var(--prog);}
+  .status-pill.s-plan{background:var(--plan-c);}
+  .status-pill.s-hold{background:var(--hold);}
+  .filter-row{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .filter-row select, .filter-row input{padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); font-size:12.5px; background:#fff;}
+
+  .story-feed{background:#fff; border-radius:14px; box-shadow:0 1px 4px rgba(20,30,60,.07); overflow:hidden;}
+  .story-date-hdr{padding:10px 20px; background:#f5f7ff; border-bottom:1px solid #e0e7ff; font-size:11.5px; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:8px;}
+  .story-date-hdr .cnt{background:#fff; color:var(--primary); padding:1px 8px; border-radius:10px; font-size:10px; border:1px solid #c7d2fe;}
+  .story-item{display:flex; gap:12px; padding:12px 20px; border-bottom:1px solid #f2f3f8;}
+  .story-item:hover{background:#fafbff;}
+  .story-dot{width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+  .story-content{flex:1; min-width:0;}
+  .story-top{display:flex; gap:10px; align-items:center; margin-bottom:2px; flex-wrap:wrap;}
+  .story-user{font-size:12px; font-weight:800; color:var(--text);}
+  .story-proj{font-size:10.5px; color:var(--primary); background:var(--primary-lt); padding:1px 8px; border-radius:10px; font-weight:700;}
+  .story-time{font-size:10.5px; color:var(--muted); margin-left:auto;}
+  .story-msg{font-size:12.5px; color:#444a5c;}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div>
-    <h1>📊 아리비앤씨 간트차트</h1>
-    <div class="sub">Projects/Tasks 시트 실시간 연동</div>
+    <h1>📊 아리비앤씨 프로젝트 관리</h1>
+    <div class="sub">Projects/Tasks/Changes 시트 실시간 연동</div>
   </div>
-  <div class="toolbar">
+  <div class="toolbar" id="gantt-toolbar">
     <select id="proj-filter"><option value="">전체 프로젝트</option></select>
-    <div class="mode-toggle">
-      <button id="mode-plan" class="on" onclick="setMode('plan')">예상</button>
+    <div class="seg">
+      <button id="mode-plan" onclick="setMode('plan')">예상</button>
       <button id="mode-actual" onclick="setMode('actual')">실제</button>
-      <button id="mode-both" onclick="setMode('both')">둘다</button>
+      <button id="mode-both" class="on" onclick="setMode('both')">둘다</button>
     </div>
+    <div class="seg">
+      <button id="zoom-week" onclick="setZoom('week')">주</button>
+      <button id="zoom-month" class="on" onclick="setZoom('month')">월</button>
+      <button id="zoom-quarter" onclick="setZoom('quarter')">분기</button>
+    </div>
+    <button class="today-btn" onclick="jumpToday()">📍 오늘</button>
     <button class="refresh-btn" onclick="loadData()">🔄 새로고침</button>
   </div>
 </div>
+
+<div class="page-tabs">
+  <div class="page-tab on" data-page="gantt" onclick="switchPage('gantt')">📊 간트차트</div>
+  <div class="page-tab" data-page="list" onclick="switchPage('list')">📋 업무 목록</div>
+  <div class="page-tab" data-page="story" onclick="switchPage('story')">📜 스토리보드</div>
+</div>
+
 <div class="status-bar" id="status">불러오는 중...</div>
+<div class="legend" id="gantt-legend">
+  <span class="item"><span class="dot" style="background:var(--done)"></span>완료</span>
+  <span class="item"><span class="dot" style="background:var(--prog)"></span>진행중</span>
+  <span class="item"><span class="dot" style="background:var(--plan-c)"></span>예정</span>
+  <span class="item"><span class="dot" style="background:var(--hold)"></span>홀딩</span>
+  <span class="item"><span class="legend-line"></span>예상 일정</span>
+  <span class="item"><span class="legend-bar"></span>실제 진행</span>
+</div>
 
 <div class="wrap">
-  <div class="legend">
-    <span><span class="dot" style="background:var(--done)"></span>완료</span>
-    <span><span class="dot" style="background:var(--prog)"></span>진행중</span>
-    <span><span class="dot" style="background:var(--plan)"></span>예정</span>
-    <span><span class="dot" style="background:var(--hold)"></span>홀딩</span>
-    <span><span class="dot" style="background:repeating-linear-gradient(45deg,#c7d2fe,#c7d2fe 2px,#e0e7ff 2px,#e0e7ff 4px)"></span>예상(줄무늬) / 실선(실제)</span>
+  <div class="page on" id="page-gantt">
+    <div id="chart-root"><div class="empty">데이터를 불러오는 중입니다...</div></div>
   </div>
-  <div id="chart-root"><div class="empty">데이터를 불러오는 중입니다...</div></div>
+
+  <div class="page" id="page-list">
+    <div class="filter-row">
+      <select id="list-proj-filter" onchange="renderList()"><option value="">전체 프로젝트</option></select>
+      <select id="list-status-filter" onchange="renderList()">
+        <option value="">전체 상태</option>
+        <option value="완료">완료</option>
+        <option value="진행중">진행중</option>
+        <option value="예정">예정</option>
+      </select>
+      <input type="text" id="list-search" placeholder="업무명 검색..." oninput="renderList()">
+    </div>
+    <div id="list-root"><div class="empty">데이터를 불러오는 중입니다...</div></div>
+  </div>
+
+  <div class="page" id="page-story">
+    <div class="filter-row">
+      <select id="story-proj-filter" onchange="renderStory()"><option value="">전체 프로젝트</option></select>
+    </div>
+    <div class="story-feed" id="story-root"><div class="empty">데이터를 불러오는 중입니다...</div></div>
+  </div>
 </div>
 
 <script>
-// ⚠️ 여기에 Apps Script 웹앱 URL을 붙여넣으세요
 const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 
-let RAW = { projects: [], tasks: [] };
-let MODE = 'plan'; // plan | actual | both
+let RAW = { projects: [], tasks: [], changes: [] };
+let MODE = 'both';
+let ZOOM = 'month';
+let minD = null, maxD = null, totalDays = 1;
+
+function switchPage(p){
+  document.querySelectorAll('.page-tab').forEach(el=>el.classList.toggle('on', el.dataset.page===p));
+  document.querySelectorAll('.page').forEach(el=>el.classList.toggle('on', el.id==='page-'+p));
+  document.getElementById('gantt-toolbar').style.display = p==='gantt' ? 'flex' : 'none';
+  document.getElementById('gantt-legend').style.display = p==='gantt' ? 'flex' : 'none';
+  if(p==='list') renderList();
+  if(p==='story') renderStory();
+}
 
 async function loadData(){
   const st = document.getElementById('status');
@@ -100,9 +216,12 @@ async function loadData(){
     const json = await res.json();
     RAW.projects = json.projects || [];
     RAW.tasks = json.tasks || [];
-    populateFilter();
+    RAW.changes = json.changes || [];
+    populateFilters();
     render();
-    st.textContent = `✅ 마지막 업데이트: ${new Date().toLocaleTimeString('ko-KR')} · 프로젝트 ${RAW.projects.length}개 · 업무 ${RAW.tasks.length}개`;
+    renderList();
+    renderStory();
+    st.textContent = `✅ 마지막 업데이트: ${new Date().toLocaleTimeString('ko-KR')} · 프로젝트 ${RAW.projects.length}개 · 업무 ${RAW.tasks.length}개 · 이력 ${RAW.changes.length}건`;
   }catch(e){
     st.textContent = '⚠️ 데이터를 불러오지 못했습니다. Apps Script URL을 확인해주세요.';
     st.classList.add('err');
@@ -110,21 +229,18 @@ async function loadData(){
   }
 }
 
-function populateFilter(){
-  const sel = document.getElementById('proj-filter');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">전체 프로젝트</option>' +
-    RAW.projects.map(p => `<option value="${esc(p['ID'])}">${esc(p['프로젝트명'])}</option>`).join('');
-  sel.value = cur;
+function populateFilters(){
+  const opts = '<option value="">전체 프로젝트</option>' + RAW.projects.map(p => `<option value="${esc(p['ID'])}">${esc(p['프로젝트명'])}</option>`).join('');
+  ['proj-filter','list-proj-filter','story-proj-filter'].forEach(id=>{
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = opts;
+    sel.value = cur;
+  });
 }
 
-function setMode(m){
-  MODE = m;
-  ['plan','actual','both'].forEach(k=>{
-    document.getElementById('mode-'+k).classList.toggle('on', k===m);
-  });
-  render();
-}
+function setMode(m){ MODE=m; ['plan','actual','both'].forEach(k=>document.getElementById('mode-'+k).classList.toggle('on',k===m)); render(); }
+function setZoom(z){ ZOOM=z; ['week','month','quarter'].forEach(k=>document.getElementById('zoom-'+k).classList.toggle('on',k===z)); render(); }
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -134,69 +250,223 @@ function statusClass(t){
   if(t['상태']==='진행 중'||t['상태']==='진행중') return 's-prog';
   return 's-plan';
 }
+function statusLabel(t){
+  if(t['홀딩']==='TRUE'||t['홀딩']===true) return '홀딩';
+  return t['상태'] || '미정';
+}
 
-function parseDate(s){
-  if(!s) return null;
-  const d = new Date(s);
-  return isNaN(d) ? null : d;
+function parseDate(s){ if(!s) return null; const d=new Date(s); return isNaN(d)?null:d; }
+function pos(dateStr){ const d=parseDate(dateStr); if(!d) return null; return ((d-minD)/86400000/totalDays*100); }
+function projName(id){ const p = RAW.projects.find(x=>x['ID']===id); return p ? p['프로젝트명'] : id; }
+
+function jumpToday(){
+  const el = document.querySelector('.today-line');
+  if(el) el.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
 }
 
 function render(){
   const root = document.getElementById('chart-root');
   const filterId = document.getElementById('proj-filter').value;
   const projs = RAW.projects.filter(p => !filterId || p['ID']===filterId);
-
   if(!projs.length){ root.innerHTML = '<div class="empty">표시할 프로젝트가 없습니다</div>'; return; }
 
-  // 전체 날짜 범위 계산
   let allDates = [];
   RAW.tasks.forEach(t=>{
-    [t['예상시작'],t['예상종료'],t['실제시작'],t['실제종료']].forEach(d=>{
-      const dt = parseDate(d); if(dt) allDates.push(dt);
-    });
+    [t['예상시작'],t['예상종료'],t['실제시작'],t['실제종료']].forEach(d=>{ const dt=parseDate(d); if(dt) allDates.push(dt); });
   });
   if(!allDates.length){ root.innerHTML = '<div class="empty">업무 일정 데이터가 없습니다</div>'; return; }
-  const minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate()-5);
-  const maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate()+5);
-  const totalDays = Math.max(1,(maxD-minD)/86400000);
 
-  function pos(dateStr){
-    const d = parseDate(dateStr); if(!d) return null;
-    return ((d-minD)/86400000/totalDays*100);
+  minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate()-5);
+  maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate()+5);
+  totalDays = Math.max(1,(maxD-minD)/86400000);
+
+  const tickStepDays = ZOOM==='week' ? 7 : ZOOM==='quarter' ? 90 : 30;
+  const ticks = [];
+  let cur = new Date(minD);
+  while(cur <= maxD){
+    ticks.push({date:new Date(cur), pct: Math.max(0,(cur-minD)/86400000/totalDays*100)});
+    cur.setDate(cur.getDate()+tickStepDays);
   }
+  function fmtTick(d){ return (d.getMonth()+1)+(ZOOM==='week'?'/'+d.getDate():'월'); }
 
-  root.innerHTML = projs.map(p=>{
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayPct = (today>=minD && today<=maxD) ? pos(today.toISOString().slice(0,10)) : null;
+
+  const axisHtml = `<div class="axis-row"><div class="axis-label">업무명</div><div class="axis-track">${ticks.map(t=>`<div class="axis-tick" style="left:${t.pct}%">${fmtTick(t.date)}</div>`).join('')}</div></div>`;
+  const gridBg = `<div class="grid-bg">${ticks.map(t=>`<div class="grid-line" style="left:${t.pct}%"></div>`).join('')}${todayPct!==null?`<div class="today-line" style="left:${todayPct}%"></div>`:''}</div>`;
+
+  root.innerHTML = projs.map((p,pi)=>{
     const tasks = RAW.tasks.filter(t => t['프로젝트ID']===p['ID']);
     if(!tasks.length) return '';
-    const rows = tasks.map(t=>{
-      const cls = statusClass(t);
-      const ps = pos(t['예상시작']), pe = pos(t['예상종료']);
-      const as_ = pos(t['실제시작']), ae = pos(t['실제종료']);
-      let bars = '';
-      if((MODE==='plan'||MODE==='both') && ps!==null && pe!==null){
-        bars += `<div class="bar plan ${cls}" style="left:${ps}%;width:${Math.max(pe-ps,0.5)}%"></div>`;
-      }
-      if((MODE==='actual'||MODE==='both') && as_!==null && ae!==null){
-        bars += `<div class="bar actual ${cls}" style="left:${as_}%;width:${Math.max(ae-as_,0.5)}%"></div>`;
-      }
-      return `<div class="grow-row">
-        <div class="task-name"><span class="grp">${esc(t['분류'])}</span>${esc(t['업무명'])}</div>
-        <div class="track">${bars}</div>
-      </div>`;
+    const groups = {};
+    tasks.forEach(t=>{ const g=t['분류']||'기타'; (groups[g]=groups[g]||[]).push(t); });
+
+    const catHtml = Object.entries(groups).map(([gname, gtasks], gi)=>{
+      let starts=[], ends=[];
+      gtasks.forEach(t=>{
+        const s = pos(t['예상시작'] || t['실제시작']);
+        const e = pos(t['예상종료'] || t['실제종료']);
+        if(s!==null) starts.push(s);
+        if(e!==null) ends.push(e);
+      });
+      const gs = starts.length?Math.min(...starts):0;
+      const ge = ends.length?Math.max(...ends):gs+1;
+      const doneCnt = gtasks.filter(t=>t['상태']==='완료'||t['상태']==='종료').length;
+      const rowId = `cat-${pi}-${gi}`;
+      const taskRows = gtasks.map(t=>{
+        const cls = statusClass(t);
+        const ps=pos(t['예상시작']), pe=pos(t['예상종료']);
+        const as_=pos(t['실제시작']), ae=pos(t['실제종료']);
+        let bars = '';
+        if((MODE==='plan'||MODE==='both') && ps!==null && pe!==null) bars += `<div class="bar-plan ${cls}" style="left:${ps}%;width:${Math.max(pe-ps,0.6)}%" title="예상: ${t['예상시작']}~${t['예상종료']}"></div>`;
+        if((MODE==='actual'||MODE==='both') && as_!==null && ae!==null) bars += `<div class="bar-actual ${cls}" style="left:${as_}%;width:${Math.max(ae-as_,0.6)}%" title="실제: ${t['실제시작']}~${t['실제종료']}"></div>`;
+        return `<div class="task-row"><div class="task-name">${esc(t['업무명'])}</div><div class="task-track">${bars}</div></div>`;
+      }).join('');
+      return `<div class="cat-row" onclick="const el=document.getElementById('${rowId}'); el.classList.toggle('closed'); this.classList.toggle('closed')">
+          <div class="cat-name"><span class="cat-arrow">▼</span>${esc(gname)} (${doneCnt}/${gtasks.length})</div>
+          <div class="cat-track"><div class="cat-bar" style="left:${gs}%;width:${Math.max(ge-gs,1)}%">${esc(gname)}</div></div>
+        </div>
+        <div class="task-list closed" id="${rowId}">${taskRows}</div>`;
     }).join('');
 
+    const doneCnt = tasks.filter(t=>t['상태']==='완료'||t['상태']==='종료').length;
     return `<div class="proj-block">
       <div class="proj-hdr" onclick="this.classList.toggle('closed'); this.nextElementSibling.classList.toggle('closed')">
         ${esc(p['프로젝트명'])} <span class="cat">${esc(p['분류'])}</span>
+        <span class="cnt">${doneCnt}/${tasks.length}건 완료</span>
         <span class="arrow">▼</span>
       </div>
-      <div class="gantt-body"><div class="grow">${rows}</div></div>
+      <div class="gbody"><div class="gcanvas">${axisHtml}${gridBg}${catHtml}</div></div>
     </div>`;
   }).join('');
 }
 
+function renderList(){
+  const root = document.getElementById('list-root');
+  if(!RAW.tasks.length){ root.innerHTML = '<div class="empty">데이터를 불러오는 중입니다...</div>'; return; }
+  const pf = document.getElementById('list-proj-filter').value;
+  const sf = document.getElementById('list-status-filter').value;
+  const kw = document.getElementById('list-search').value.trim().toLowerCase();
+
+  let tasks = RAW.tasks.filter(t=>{
+    if(pf && t['프로젝트ID']!==pf) return false;
+    if(sf && (t['상태']||'').replace(' ','') !== sf) return false;
+    if(kw && !(t['업무명']||'').toLowerCase().includes(kw)) return false;
+    return true;
+  });
+
+  if(!tasks.length){ root.innerHTML = '<div class="empty">조건에 맞는 업무가 없습니다</div>'; return; }
+
+  root.innerHTML = `<table class="task-table">
+    <thead><tr>
+      <th>프로젝트</th><th>분류</th><th>업무명</th><th>상태</th><th>담당자</th>
+      <th>예상시작</th><th>예상종료</th><th>실제시작</th><th>실제종료</th>
+    </tr></thead>
+    <tbody>
+      ${tasks.map(t=>{
+        const cls = statusClass(t);
+        return `<tr>
+          <td>${esc(projName(t['프로젝트ID']))}</td>
+          <td>${esc(t['분류'])}</td>
+          <td>${esc(t['업무명'])}</td>
+          <td><span class="status-pill ${cls}">${esc(statusLabel(t))}</span></td>
+          <td>${esc(t['담당자']||'-')}</td>
+          <td>${esc(t['예상시작']||'-')}</td>
+          <td>${esc(t['예상종료']||'-')}</td>
+          <td>${esc(t['실제시작']||'-')}</td>
+          <td>${esc(t['실제종료']||'-')}</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+
+function dateGroupLabel(str){
+  const d = parseDateFlexible(str);
+  if(!d) return '날짜 미상';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dOnly = new Date(d); dOnly.setHours(0,0,0,0);
+  const diff = Math.round((today-dOnly)/86400000);
+  const mo = d.getMonth()+1, da = d.getDate();
+  if(diff===0) return `🔵 오늘 (${mo}월 ${da}일)`;
+  if(diff===1) return `어제 (${mo}월 ${da}일)`;
+  if(diff>=0 && diff<=7) return `${diff}일 전 (${mo}월 ${da}일)`;
+  return `${d.getFullYear()}년 ${mo}월 ${da}일`;
+}
+function parseDateFlexible(str){
+  if(!str) return null;
+  let s = String(str).trim();
+  const isPM = s.includes('오후'), isAM = s.includes('오전');
+  s = s.replace(/오전\s*/g,'').replace(/오후\s*/g,'');
+  const m = s.match(/(\d{4})[.\-\/]\s*(\d{1,2})[.\-\/]\s*(\d{1,2})\.?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(m){
+    let h=+m[4]; if(isPM && h<12) h+=12; if(isAM && h===12) h=0;
+    return new Date(+m[1], +m[2]-1, +m[3], h, +m[5], +(m[6]||0));
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function feedColor(msg){
+  msg = msg || '';
+  if(msg.includes('상태')) return 'var(--primary)';
+  if(msg.includes('홀딩')) return 'var(--hold)';
+  if(msg.includes('날짜')||msg.includes('기간')||msg.includes('예상')||msg.includes('실제')) return 'var(--prog)';
+  if(msg.includes('메모')) return 'var(--done)';
+  if(msg.includes('추가')) return '#6366f1';
+  if(msg.includes('삭제')) return '#ef4444';
+  return 'var(--muted)';
+}
+
+function renderStory(){
+  const root = document.getElementById('story-root');
+  if(!RAW.changes){ root.innerHTML = '<div class="empty">데이터를 불러오는 중입니다...</div>'; return; }
+  const pf = document.getElementById('story-proj-filter').value;
+  const pfName = pf ? projName(pf) : '';
+
+  let changes = [...RAW.changes];
+  changes.sort((a,b)=>{
+    const da = parseDateFlexible(a['시각']), db = parseDateFlexible(b['시각']);
+    return (db?db.getTime():0) - (da?da.getTime():0);
+  });
+
+  if(pf){
+    changes = changes.filter(c => (c['프로젝트']||'') === pfName || (c['프로젝트']||'')===pf);
+  }
+
+  if(!changes.length){ root.innerHTML = '<div class="empty">변경 이력이 없습니다</div>'; return; }
+
+  const groups = [];
+  let curKey = null;
+  changes.slice(0,300).forEach(c=>{
+    const label = dateGroupLabel(c['시각']);
+    if(label !== curKey){ curKey = label; groups.push({label, items:[]}); }
+    groups[groups.length-1].items.push(c);
+  });
+
+  root.innerHTML = groups.map(g=>{
+    return `<div class="story-date-hdr">${esc(g.label)} <span class="cnt">${g.items.length}건</span></div>` +
+      g.items.map(c=>{
+        const color = feedColor(c['변경내용']);
+        let timeStr = String(c['시각']||'');
+        const tm = timeStr.match(/(오전|오후)?\s*(\d{1,2}):(\d{2})/);
+        const short = tm ? (tm[1]||'')+' '+tm[2]+':'+tm[3] : '';
+        return `<div class="story-item">
+          <div class="story-dot" style="background:${color}"></div>
+          <div class="story-content">
+            <div class="story-top">
+              <span class="story-user">${esc(c['사용자']||'알 수 없음')}</span>
+              <span class="story-proj">${esc(c['프로젝트']||'-')}</span>
+              <span class="story-time">${esc(short)}</span>
+            </div>
+            <div class="story-msg">${esc(c['업무']?('['+c['업무']+'] '):'')}${esc(c['변경내용']||'')}</div>
+          </div>
+        </div>`;
+      }).join('');
+  }).join('');
+}
+
 loadData();
-setInterval(loadData, 60000); // 1분마다 자동 갱신
+setInterval(loadData, 60000);
 </script>
 </body>
 </html>
