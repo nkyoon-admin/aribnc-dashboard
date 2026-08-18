@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아리비앤씨 간트차트</title>
+<style>
+  :root{
+    --bg:#f5f6fa; --card:#fff; --border:#e2e5ec; --text:#1a1d29; --muted:#7a7f8f;
+    --primary:#3B5BDB; --primary-lt:#eef1fd;
+    --done:#10b981; --prog:#f59e0b; --plan:#94a3b8; --hold:#dc2626;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text);}
+  .hdr{background:linear-gradient(135deg,#1e3a8a,#3B5BDB); color:#fff; padding:18px 28px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .hdr h1{font-size:18px; font-weight:800;}
+  .hdr .sub{font-size:12px; opacity:.8;}
+  .toolbar{display:flex; gap:10px; margin-left:auto; align-items:center; flex-wrap:wrap;}
+  select, button{padding:7px 14px; border-radius:8px; border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12); color:#fff; font-size:12.5px; cursor:pointer;}
+  select option{color:#1a1d29;}
+  .refresh-btn{background:#fff; color:var(--primary); font-weight:700; border:none;}
+  .mode-toggle{display:flex; border-radius:8px; overflow:hidden; border:1.5px solid rgba(255,255,255,.4);}
+  .mode-toggle button{border:none; border-radius:0; background:transparent;}
+  .mode-toggle button.on{background:#fff; color:var(--primary); font-weight:700;}
+  .status-bar{padding:8px 28px; font-size:11.5px; color:var(--muted); background:#fff; border-bottom:1px solid var(--border);}
+  .status-bar.err{color:var(--hold);}
+  .wrap{padding:20px 28px 60px;}
+  .legend{display:flex; gap:16px; margin-bottom:14px; font-size:12px; color:var(--muted); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
+  .proj-block{background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); margin-bottom:14px; overflow:hidden;}
+  .proj-hdr{padding:12px 18px; border-bottom:1px solid var(--border); font-weight:700; font-size:13.5px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fafbff;}
+  .proj-hdr .cat{font-size:10.5px; font-weight:600; color:var(--primary); background:var(--primary-lt); padding:2px 8px; border-radius:8px;}
+  .proj-hdr .arrow{margin-left:auto; transition:transform .2s; color:var(--muted); font-size:11px;}
+  .proj-hdr.closed .arrow{transform:rotate(-90deg);}
+  .gantt-body{overflow-x:auto;}
+  .gantt-body.closed{display:none;}
+  .grow{min-width:900px;}
+  .grow-row{display:grid; grid-template-columns:220px 1fr; border-bottom:1px solid #f1f2f6; align-items:center;}
+  .grow-row:last-child{border-bottom:none;}
+  .task-name{padding:9px 14px; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-right:1px solid #f1f2f6;}
+  .task-name .grp{font-size:9.5px; color:var(--muted); display:block;}
+  .track{position:relative; height:34px; margin:0 4px;}
+  .bar{position:absolute; top:8px; height:8px; border-radius:4px; opacity:.9;}
+  .bar.plan{background:repeating-linear-gradient(45deg,#c7d2fe,#c7d2fe 4px,#e0e7ff 4px,#e0e7ff 8px); top:5px; height:6px;}
+  .bar.actual{top:15px; height:10px;}
+  .bar.s-done{background:var(--done);}
+  .bar.s-prog{background:var(--prog);}
+  .bar.s-plan{background:var(--plan);}
+  .bar.s-hold{background:var(--hold);}
+  .axis{display:grid; grid-template-columns:220px 1fr; border-top:2px solid var(--border); background:#fafbff;}
+  .axis-track{position:relative; height:24px; font-size:9.5px; color:var(--muted);}
+  .axis-tick{position:absolute; top:4px; border-left:1px solid #e5e7eb; padding-left:3px;}
+  .empty{padding:60px; text-align:center; color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>📊 아리비앤씨 간트차트</h1>
+    <div class="sub">Projects/Tasks 시트 실시간 연동</div>
+  </div>
+  <div class="toolbar">
+    <select id="proj-filter"><option value="">전체 프로젝트</option></select>
+    <div class="mode-toggle">
+      <button id="mode-plan" class="on" onclick="setMode('plan')">예상</button>
+      <button id="mode-actual" onclick="setMode('actual')">실제</button>
+      <button id="mode-both" onclick="setMode('both')">둘다</button>
+    </div>
+    <button class="refresh-btn" onclick="loadData()">🔄 새로고침</button>
+  </div>
+</div>
+<div class="status-bar" id="status">불러오는 중...</div>
+
+<div class="wrap">
+  <div class="legend">
+    <span><span class="dot" style="background:var(--done)"></span>완료</span>
+    <span><span class="dot" style="background:var(--prog)"></span>진행중</span>
+    <span><span class="dot" style="background:var(--plan)"></span>예정</span>
+    <span><span class="dot" style="background:var(--hold)"></span>홀딩</span>
+    <span><span class="dot" style="background:repeating-linear-gradient(45deg,#c7d2fe,#c7d2fe 2px,#e0e7ff 2px,#e0e7ff 4px)"></span>예상(줄무늬) / 실선(실제)</span>
+  </div>
+  <div id="chart-root"><div class="empty">데이터를 불러오는 중입니다...</div></div>
+</div>
+
+<script>
+// ⚠️ 여기에 Apps Script 웹앱 URL을 붙여넣으세요
+const GANTT_API_URL = 'https://script.google.com/a/macros/aribnc.com/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
+
+let RAW = { projects: [], tasks: [] };
+let MODE = 'plan'; // plan | actual | both
+
+async function loadData(){
+  const st = document.getElementById('status');
+  st.textContent = '불러오는 중...';
+  st.classList.remove('err');
+  try{
+    const res = await fetch(GANTT_API_URL);
+    const json = await res.json();
+    RAW.projects = json.projects || [];
+    RAW.tasks = json.tasks || [];
+    populateFilter();
+    render();
+    st.textContent = `✅ 마지막 업데이트: ${new Date().toLocaleTimeString('ko-KR')} · 프로젝트 ${RAW.projects.length}개 · 업무 ${RAW.tasks.length}개`;
+  }catch(e){
+    st.textContent = '⚠️ 데이터를 불러오지 못했습니다. Apps Script URL을 확인해주세요.';
+    st.classList.add('err');
+    console.error(e);
+  }
+}
+
+function populateFilter(){
+  const sel = document.getElementById('proj-filter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">전체 프로젝트</option>' +
+    RAW.projects.map(p => `<option value="${esc(p['ID'])}">${esc(p['프로젝트명'])}</option>`).join('');
+  sel.value = cur;
+}
+
+function setMode(m){
+  MODE = m;
+  ['plan','actual','both'].forEach(k=>{
+    document.getElementById('mode-'+k).classList.toggle('on', k===m);
+  });
+  render();
+}
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function statusClass(t){
+  if(t['홀딩']==='TRUE'||t['홀딩']===true) return 's-hold';
+  if(t['상태']==='완료'||t['상태']==='종료') return 's-done';
+  if(t['상태']==='진행 중'||t['상태']==='진행중') return 's-prog';
+  return 's-plan';
+}
+
+function parseDate(s){
+  if(!s) return null;
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function render(){
+  const root = document.getElementById('chart-root');
+  const filterId = document.getElementById('proj-filter').value;
+  const projs = RAW.projects.filter(p => !filterId || p['ID']===filterId);
+
+  if(!projs.length){ root.innerHTML = '<div class="empty">표시할 프로젝트가 없습니다</div>'; return; }
+
+  // 전체 날짜 범위 계산
+  let allDates = [];
+  RAW.tasks.forEach(t=>{
+    [t['예상시작'],t['예상종료'],t['실제시작'],t['실제종료']].forEach(d=>{
+      const dt = parseDate(d); if(dt) allDates.push(dt);
+    });
+  });
+  if(!allDates.length){ root.innerHTML = '<div class="empty">업무 일정 데이터가 없습니다</div>'; return; }
+  const minD = new Date(Math.min(...allDates)); minD.setDate(minD.getDate()-5);
+  const maxD = new Date(Math.max(...allDates)); maxD.setDate(maxD.getDate()+5);
+  const totalDays = Math.max(1,(maxD-minD)/86400000);
+
+  function pos(dateStr){
+    const d = parseDate(dateStr); if(!d) return null;
+    return ((d-minD)/86400000/totalDays*100);
+  }
+
+  root.innerHTML = projs.map(p=>{
+    const tasks = RAW.tasks.filter(t => t['프로젝트ID']===p['ID']);
+    if(!tasks.length) return '';
+    const rows = tasks.map(t=>{
+      const cls = statusClass(t);
+      const ps = pos(t['예상시작']), pe = pos(t['예상종료']);
+      const as_ = pos(t['실제시작']), ae = pos(t['실제종료']);
+      let bars = '';
+      if((MODE==='plan'||MODE==='both') && ps!==null && pe!==null){
+        bars += `<div class="bar plan ${cls}" style="left:${ps}%;width:${Math.max(pe-ps,0.5)}%"></div>`;
+      }
+      if((MODE==='actual'||MODE==='both') && as_!==null && ae!==null){
+        bars += `<div class="bar actual ${cls}" style="left:${as_}%;width:${Math.max(ae-as_,0.5)}%"></div>`;
+      }
+      return `<div class="grow-row">
+        <div class="task-name"><span class="grp">${esc(t['분류'])}</span>${esc(t['업무명'])}</div>
+        <div class="track">${bars}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="proj-block">
+      <div class="proj-hdr" onclick="this.classList.toggle('closed'); this.nextElementSibling.classList.toggle('closed')">
+        ${esc(p['프로젝트명'])} <span class="cat">${esc(p['분류'])}</span>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="gantt-body"><div class="grow">${rows}</div></div>
+    </div>`;
+  }).join('');
+}
+
+loadData();
+setInterval(loadData, 60000); // 1분마다 자동 갱신
+</script>
+</body>
+</html>
