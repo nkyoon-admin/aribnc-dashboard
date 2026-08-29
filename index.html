@@ -1797,5 +1797,30 @@ function gToday(){
 loadData();
 setInterval(loadData, 60000);
 </script>
+  <script>
+    (function(){
+      function aribDeepLink(){
+        var q=new URLSearchParams(location.search);
+        var pid=q.get('p');
+        var view=q.get('view');
+        if(!pid)return;
+        var n=0;
+        var iv=setInterval(function(){
+          n++;
+          var el=document.querySelector('[onclick="selectProj(\'' + pid + '\')"]');
+          if(typeof selectProj==='function' && el){
+            selectProj(pid);
+            clearInterval(iv);
+            if(view && typeof switchView==='function'){
+              setTimeout(function(){switchView(view);},400);
+            }
+          } else if(n>60){
+            clearInterval(iv);
+          }
+        },100);
+      }
+      window.addEventListener('load', aribDeepLink);
+    })();
+  </script>
 </body>
 </html>
