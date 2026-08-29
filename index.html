@@ -483,6 +483,10 @@ const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6of
 // 이전(실제로는 배포되지 않았던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_OLD = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
+  const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
+  function appsheetProjectUrl(pid){
+    return `${APPSHEET_URL}#control=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
+  }
 /* AppSheet에서 Tasks 테이블 행 하나를 바로 여는 딥링크용 View 이름.
    AppSheet 편집기 → UX → Views 에서 Tasks 테이블의 Detail(또는 Form) view 이름을 확인해서
    다르면 아래 값만 바꿔주면 됨 (기본값: 자동 생성되는 이름 그대로 사용) */
@@ -911,7 +915,7 @@ function renderDetail(pid){
       </div>
     </div>
     <div class="memo-box">
-      <h4>📋 프로젝트 메모<a href="${APPSHEET_URL}" target="_blank" rel="noopener">📱 AppSheet에서 수정</a></h4>
+      <h4>📋 프로젝트 메모<a href="${appsheetProjectUrl(pid)}" target="_blank" rel="noopener">📱 AppSheet에서 수정</a></h4>
       <div class="memo-current" id="memo-current"></div>
       <div class="memo-hist-toggle" id="memo-hist-toggle" onclick="toggleMemoHist()">🕘 변경 이력 <span id="memo-hist-arrow">▶</span></div>
       <div class="memo-list" id="memo-list" style="display:none"></div>
@@ -1812,7 +1816,7 @@ setInterval(loadData, 60000);
             selectProj(pid);
             clearInterval(iv);
             if(view && typeof switchView==='function'){
-              setTimeout(function(){switchView(view);},400);
+              [300,800,1500,2500,4000].forEach(function(d){ setTimeout(function(){switchView(view);}, d); });
             }
           } else if(n>60){
             clearInterval(iv);
