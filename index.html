@@ -485,14 +485,14 @@ const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6of
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
   const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
   function appsheetProjectUrl(pid){
-    return `${APPSHEET_URL}#control=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
+    return `${APPSHEET_URL}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
   }
 /* AppSheet에서 Tasks 테이블 행 하나를 바로 여는 딥링크용 View 이름.
    AppSheet 편집기 → UX → Views 에서 Tasks 테이블의 Detail(또는 Form) view 이름을 확인해서
    다르면 아래 값만 바꿔주면 됨 (기본값: 자동 생성되는 이름 그대로 사용) */
 const TASKS_DETAIL_VIEW = 'tasks_Detail';
 function appsheetTaskUrl(taskId){
-  return `${APPSHEET_URL}#control=${encodeURIComponent(TASKS_DETAIL_VIEW)}&row=${encodeURIComponent(taskId)}`;
+  return `${APPSHEET_URL}#view=${encodeURIComponent(TASKS_DETAIL_VIEW)}&row=${encodeURIComponent(taskId)}`;
 }
 function openTaskInAppSheet(taskId, e){
   if(e) e.stopPropagation();
