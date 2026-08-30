@@ -350,6 +350,33 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .en-card{background:var(--card);border-radius:12px;box-shadow:var(--sh);border:1px solid var(--border);padding:14px 16px}
 .en-card h4{font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:2px}
 .en-card .sub{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+/* 클릭하면 크게 볼 수 있는 카드(차트·메모) 공통 표시 */
+.zoomable{cursor:zoom-in;transition:box-shadow .15s ease,border-color .15s ease}
+.zoomable:hover{box-shadow:0 0 0 2px var(--primary-lt),var(--sh);border-color:var(--primary)}
+.zoom-modal{display:none;position:fixed;inset:0;background:rgba(15,18,24,.6);z-index:9999;align-items:center;justify-content:center;padding:32px}
+.zoom-modal.show{display:flex}
+.zoom-modal-inner{background:var(--card);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.4);max-width:min(1320px,97vw);max-height:94vh;overflow:auto;padding:36px 40px;position:relative}
+.zoom-modal-close{position:absolute;top:14px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:var(--primary-lt);color:var(--text);font-size:18px;cursor:pointer;line-height:1;z-index:1}
+.zoom-modal-close:hover{background:var(--border)}
+.zoom-modal-body h4{font-size:21px;margin-bottom:6px}
+.zoom-modal-body .sub{font-size:15px;margin-bottom:22px}
+.zoom-modal-body .en-linewrap{position:relative;width:100%;height:0;padding-bottom:41.3%;overflow:hidden}
+.zoom-modal-body .en-linewrap svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.zoom-modal-body .en-legend{font-size:15px;gap:24px;margin-top:12px}
+.zoom-modal-body .en-legend i{width:18px;height:4.5px}
+.zoom-modal-body .en-fun-label{font-size:14px}
+.zoom-modal-body .en-fun-track{height:30px}
+.zoom-modal-body .en-fun-fill{font-size:14px}
+.zoom-modal-body .en-fun-drop{font-size:13px;margin-top:6px}
+.zoom-modal-body .en-donuts{gap:48px;margin-top:20px}
+.zoom-modal-body .en-donut-item svg{width:120px;height:120px}
+.zoom-modal-body .en-dv{font-size:22px}
+.zoom-modal-body .en-dl{font-size:13px}
+.zoom-modal-body .memo-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+.zoom-modal-body .memo-sec{padding:18px 20px}
+.zoom-modal-body .memo-sec-t{font-size:16px}
+.zoom-modal-body .memo-sec-b{font-size:17px;line-height:1.75}
+@media(max-width:640px){.zoom-modal-body .memo-grid{grid-template-columns:1fr}}
 .en-fun-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .en-fun-label{width:64px;font-size:12px;color:var(--muted);font-weight:700;flex-shrink:0}
 .en-fun-track{flex:1;height:20px;background:var(--primary-lt);border-radius:10px;overflow:hidden;position:relative}
@@ -477,22 +504,30 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
   <div class="pl-detail-panel" id="plDetailPanel"></div>
 </div>
 
+<div class="zoom-modal" id="zoomModal" onclick="if(event.target===this) closeZoomModal()">
+  <div class="zoom-modal-inner">
+    <button class="zoom-modal-close" onclick="closeZoomModal()" title="닫기 (Esc)">✕</button>
+    <div class="zoom-modal-body" id="zoomModalBody"></div>
+  </div>
+</div>
+
 <script>
 // 실제 라이브 배포 URL (2026.8.27 버전 3 — 연구영업 리드 파이프라인 시트 연동 포함)
 const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 // 이전(실제로는 배포되지 않았던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_OLD = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
-  const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
-  function appsheetProjectUrl(pid){
-    return `${APPSHEET_URL}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
-  }
 /* AppSheet에서 Tasks 테이블 행 하나를 바로 여는 딥링크용 View 이름.
    AppSheet 편집기 → UX → Views 에서 Tasks 테이블의 Detail(또는 Form) view 이름을 확인해서
    다르면 아래 값만 바꿔주면 됨 (기본값: 자동 생성되는 이름 그대로 사용) */
 const TASKS_DETAIL_VIEW = 'tasks_Detail';
 function appsheetTaskUrl(taskId){
   return `${APPSHEET_URL}#view=${encodeURIComponent(TASKS_DETAIL_VIEW)}&row=${encodeURIComponent(taskId)}`;
+}
+/* AppSheet에서 Projects 테이블의 특정 프로젝트 행을 바로 여는 딥링크 (프로젝트 메모의 "AppSheet에서 수정" 버튼용) */
+const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
+function appsheetProjectUrl(pid){
+  return `${APPSHEET_URL}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
 }
 function openTaskInAppSheet(taskId, e){
   if(e) e.stopPropagation();
@@ -592,6 +627,31 @@ function gGrad(st){ return ganttSkin==='obsidian' ? (GGRAD_OB[st]||GGRAD_OB[''])
 function gPale(st){ return ganttSkin==='obsidian' ? (GPALE_OB[st]||GPALE_OB['']) : (GPALE[st]||GPALE['']); }
 
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ── ZOOM MODAL (차트/메모 카드를 클릭하면 크게 보기) ──
+   카드의 현재 DOM(즉 이미 그려진 svg 등 포함)을 그대로 복제해서 넣는다.
+   id를 그대로 복제하면 문서에 중복 id가 생기므로 반드시 제거한다. */
+function openZoomModal(html){
+  const modal = document.getElementById('zoomModal');
+  const body = document.getElementById('zoomModalBody');
+  if(!modal || !body) return;
+  body.innerHTML = html.replace(/\sid="[^"]*"/g, '');
+  modal.classList.add('show');
+  document.addEventListener('keydown', zoomModalEscHandler);
+}
+function closeZoomModal(){
+  const modal = document.getElementById('zoomModal');
+  if(modal) modal.classList.remove('show');
+  document.removeEventListener('keydown', zoomModalEscHandler);
+}
+function zoomModalEscHandler(e){ if(e.key==='Escape') closeZoomModal(); }
+function zoomEnCard(el){ openZoomModal(el.innerHTML); }
+function zoomMemoBox(ev){
+  if(ev.target.closest('a,.memo-hist-toggle,.memo-list')) return;
+  const cur = document.getElementById('memo-current');
+  if(!cur) return;
+  openZoomModal(`<h4 style="margin-bottom:14px">📋 프로젝트 메모</h4>${cur.innerHTML}`);
+}
 
 /* ── DATA LOAD ── */
 async function loadData(){
@@ -780,6 +840,38 @@ function isProg(t){ return t['상태']==='진행 중'||t['상태']==='진행중'
 function statusCls(t){ if(isHold(t)) return 's-hold'; if(isDone(t)) return 's-done'; if(isProg(t)) return 's-prog'; return 's-plan'; }
 function statusLabel(t){ if(isHold(t)) return '홀딩'; return t['상태']||'예정'; }
 function projTasks(pid){ return RAW.tasks.filter(t=>t['프로젝트ID']===pid); }
+
+/* 업무 정렬: 같은 분류(카테고리) 안에서는 "업무ID" 순서로 정렬한다.
+   업무ID는 "T1052A" 처럼 문자+숫자+문자(접미사)가 섞여 있어서 단순 문자열 비교(localeCompare)로는
+   "T1000"이 "T999"보다 앞으로 오는 등 잘못 정렬될 수 있다.
+   그래서 ID를 [글자 prefix, 숫자, 글자 suffix] 조각으로 나눠 숫자는 숫자답게, 나머지는 문자열로 비교하는
+   "자연 정렬(natural sort)"을 사용한다. ID가 없는 업무는 맨 뒤로 보낸다. */
+function idSortKey(id){
+  const s = String(id||'').trim();
+  if(!s) return null;
+  const m = s.match(/^([^\d]*)(\d+)(.*)$/); // 예: "T1052A" -> ["T","1052","A"]
+  if(m) return [m[1], parseInt(m[2],10), m[3]];
+  return [s, 0, '']; // 숫자가 아예 없는 ID는 문자열만으로 비교
+}
+function taskSortKey(t){
+  const k = idSortKey(t['ID'] ?? t['업무ID']);
+  return k ? [0, k] : [1, null];
+}
+function cmpIdKey(a,b){
+  // a,b는 [prefix, num, suffix]
+  if(a[0]!==b[0]) return a[0]<b[0]?-1:1;
+  if(a[1]!==b[1]) return a[1]-b[1];
+  if(a[2]!==b[2]) return a[2]<b[2]?-1:1;
+  return 0;
+}
+function sortTasksByDate(list){
+  return list.map((t,i)=>({t,i})).sort((a,b)=>{
+    const ka=taskSortKey(a.t), kb=taskSortKey(b.t);
+    if(ka[0]!==kb[0]) return ka[0]-kb[0]; // ID 있는 업무를 먼저
+    if(ka[0]===0) { const c = cmpIdKey(ka[1], kb[1]); if(c!==0) return c; }
+    return a.i-b.i; // 안정 정렬: 동일 ID(있을 수 없지만 방어적으로)면 원래 순서 유지
+  }).map(x=>x.t);
+}
 function rate(pid){
   const tasks = projTasks(pid);
   if(!tasks.length) return 0;
@@ -914,11 +1006,11 @@ function renderDetail(pid){
         <div class="mi wide"><label>💰 비용지급조건</label><span>${esc(p['비용지급조건(계약서)']||p['비용지급조건']||'-')}</span></div>
       </div>
     </div>
-    <div class="memo-box">
-      <h4>📋 프로젝트 메모<a href="${appsheetProjectUrl(pid)}" target="_blank" rel="noopener">📱 AppSheet에서 수정</a></h4>
+    <div class="memo-box zoomable" onclick="zoomMemoBox(event)" title="클릭하면 메모를 크게 볼 수 있어요">
+      <h4>📋 프로젝트 메모<a href="${appsheetProjectUrl(pid)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📱 AppSheet에서 수정</a></h4>
       <div class="memo-current" id="memo-current"></div>
-      <div class="memo-hist-toggle" id="memo-hist-toggle" onclick="toggleMemoHist()">🕘 변경 이력 <span id="memo-hist-arrow">▶</span></div>
-      <div class="memo-list" id="memo-list" style="display:none"></div>
+      <div class="memo-hist-toggle" id="memo-hist-toggle" onclick="event.stopPropagation();toggleMemoHist()">🕘 변경 이력 <span id="memo-hist-arrow">▶</span></div>
+      <div class="memo-list" id="memo-list" style="display:none" onclick="event.stopPropagation()"></div>
     </div>
     </div>
     <div class="vtabs">
@@ -988,7 +1080,8 @@ function buildTaskView(pid){
   const tasks = projTasks(pid);
   const groups = {};
   tasks.forEach(t=>{ const g = t['분류[업무그룹]']||'기타'; (groups[g]=groups[g]||[]).push(t); });
-  return Object.entries(groups).map(([gname,gtasks],gi)=>{
+  return Object.entries(groups).map(([gname,gtasksRaw],gi)=>{
+    const gtasks = sortTasksByDate(gtasksRaw);
     const doneCnt = gtasks.filter(isDone).length;
     const allDone = gtasks.length>0 && doneCnt===gtasks.length;
     const rowId = `cat-${gi}`;
@@ -996,7 +1089,7 @@ function buildTaskView(pid){
       const hasMemo = (t['메모']||'').trim();
       const asg = (t['담당자']||'').trim();
       const asgHtml = asg ? `<span class="asg-chip"><span class="asg-avatar">${esc(asg[0])}</span>${esc(asg)}</span>` : '<span style="color:var(--muted)">-</span>';
-      const tid = t['ID'];
+      const tid = t['ID'] ?? t['업무ID'];
       const trClick = tid ? ` class="tl-row${isHold(t)?' row-hold':''}" style="cursor:pointer" onclick="openTaskInAppSheet('${esc(tid)}',event)" title="클릭하면 AppSheet에서 이 업무를 바로 엽니다"` : ` class="${isHold(t)?'row-hold':''}"`;
       return `<tr${trClick}>
         <td class="tl-name">${esc(t['업무명'])}</td>
@@ -1306,12 +1399,13 @@ function realEnrollAgg(pid, p){
   let screen=0, fail=0, enroll=0, drop=0;
   const siteMap = {};
   const enrollEvents = [];
+  const screenEvents = [];
   rows.forEach(r=>{
     const kind = String(r['구분']||'').trim();
     const n = num(r['인원수']);
     const dt = parseDateFlexible(r['날짜']) || gpd(r['날짜']);
     /* AppSheet Enum 실제값(스크리닝실패/랜덤배정)과 기존 표기(스크리닝 페일/엔롤)를 모두 인식 */
-    if(kind==='스크리닝') screen += n;
+    if(kind==='스크리닝'){ screen += n; if(dt) screenEvents.push({date:dt, n}); }
     else if(kind==='스크리닝 페일' || kind==='스크리닝실패') fail += n;
     else if(kind==='엔롤' || kind==='랜덤배정'){
       enroll += n;
@@ -1322,11 +1416,17 @@ function realEnrollAgg(pid, p){
     else if(kind==='드롭아웃') drop += n;
   });
   enrollEvents.sort((a,b)=>a.date-b.date);
-  const start = enrollEvents.length ? enrollEvents[0].date : (gpd(p&&p['시작일']) || new Date());
+  screenEvents.sort((a,b)=>a.date-b.date);
+  const firstDates = [];
+  if(screenEvents.length) firstDates.push(screenEvents[0].date);
+  if(enrollEvents.length) firstDates.push(enrollEvents[0].date);
+  const start = firstDates.length ? new Date(Math.min(...firstDates.map(d=>d.getTime()))) : (gpd(p&&p['시작일']) || new Date());
   const today = new Date(); today.setHours(0,0,0,0);
   const elapsed = Math.max(0, Math.round((today-start)/86400000));
   let cum = 0;
   const timeline = enrollEvents.map(e=>{ cum += e.n; return {date:e.date, cum}; });
+  let scum = 0;
+  const screenTimeline = screenEvents.map(e=>{ scum += e.n; return {date:e.date, cum:scum}; });
   const sites = Object.entries(siteMap).map(([n,cur])=>({n,cur})).sort((a,b)=>b.cur-a.cur);
   const targetRaw = p && p['목표엔롤인원'];
   const enrollTarget = (targetRaw!==undefined && targetRaw!==null && targetRaw!=='') ? num(targetRaw) : null;
@@ -1334,7 +1434,8 @@ function realEnrollAgg(pid, p){
   const startRaw = p && p['시작일'];
   const targetDays = (startRaw && targetEndRaw && gpd(startRaw) && gpd(targetEndRaw))
     ? Math.round((gpd(targetEndRaw)-gpd(startRaw))/86400000) : null;
-  return { hasData:true, started:true, elapsed, targetDays, screen, fail, enroll, drop, enrollTarget, sites, start, timeline };
+  const targetEnd = gpd(targetEndRaw);
+  return { hasData:true, started:true, elapsed, targetDays, screen, fail, enroll, drop, enrollTarget, targetEnd, sites, start, timeline, screenTimeline };
 }
 function buildEnrollView(pid){
   if(!pid) return '<div class="empty">프로젝트를 선택하세요</div>';
@@ -1370,7 +1471,7 @@ function buildEnrollView(pid){
       <div class="en-sc"><div class="ei2">↩</div><div class="el">Drop-out</div><div class="en">${d.drop}</div><div class="es">${dropRate.toFixed(1)}% of enrolled</div></div>
     </div>
     <div class="en-row">
-      <div class="en-card">
+      <div class="en-card zoomable" onclick="zoomEnCard(this)" title="클릭하면 크게 볼 수 있어요">
         <h4>Recruitment Funnel</h4><div class="sub">Screening → Enrollment → Active (excl. discontinued)</div>
         <div class="en-fun-row"><div class="en-fun-label">Screening</div><div class="en-fun-track"><div class="en-fun-fill" style="width:100%;background:var(--plan-c)">${d.screen}</div></div></div>
         <div class="en-fun-row"><div class="en-fun-label">Enrollment</div><div class="en-fun-track"><div class="en-fun-fill" style="width:${d.screen?(d.enroll/d.screen*100):0}%;background:var(--prog)">${d.enroll}</div></div></div>
@@ -1381,10 +1482,10 @@ function buildEnrollView(pid){
           <div class="en-donut-item"><svg viewBox="0 0 42 42" id="en-donut-drop"></svg><div class="en-dv" style="color:var(--prog)">${dropRate.toFixed(1)}%</div><div class="en-dl">Drop-out Rate</div></div>
         </div>
       </div>
-      <div class="en-card">
-        <h4>Cumulative Enrollment</h4><div class="sub">From recruitment start to today${hasTarget?', vs. target pace':''}</div>
+      <div class="en-card zoomable" onclick="zoomEnCard(this)" title="클릭하면 크게 볼 수 있어요">
+        <h4>Cumulative Enrollment</h4><div class="sub">Screening & Enrollment, from recruitment start to today${hasTarget?', vs. target pace':''}</div>
         <div class="en-linewrap"><svg id="en-linechart" viewBox="0 0 460 190" preserveAspectRatio="none"></svg></div>
-        <div class="en-legend"><span><i style="background:var(--primary)"></i>Actual Enrollment</span>${hasTarget?'<span><i style="background:var(--hold)"></i>Target Pace</span>':''}</div>
+        <div class="en-legend"><span><i style="background:repeating-linear-gradient(90deg,var(--plan-c) 0 3px,transparent 3px 5.5px)"></i>Screening</span><span><i style="background:var(--primary)"></i>Enrollment</span>${hasTarget?'<span><i style="background:repeating-linear-gradient(90deg,var(--hold) 0 4px,transparent 4px 7px)"></i>Target Pace</span>':''}</div>
       </div>
     </div>
     <div class="en-sites">
@@ -1430,32 +1531,49 @@ function renderEnrollCharts(pid){
   const muted = cs2.getPropertyValue('--muted').trim() || '#888';
   const border = cs2.getPropertyValue('--border').trim() || '#eee';
   const primary = cs2.getPropertyValue('--primary').trim() || '#3B5BDB';
+  const planC = cs2.getPropertyValue('--plan-c').trim() || '#4f5e73';
 
-  /* actualPts/targetPts: [xPixel, rawValue] 쌍 — y좌표 변환은 아래서 maxY 확정 후 일괄 처리 */
-  let actualPts, targetPts=null, maxVal;
+  /* actualPts/screenPts/targetPts: [xPixel, rawValue] 쌍 — y좌표 변환은 아래서 maxY 확정 후 일괄 처리 */
+  let actualPts, screenPts=null, targetPts=null, maxVal;
+  let todayX=null, axisExtended=false, axisEndLabel='';
   if(isMock){
     const pts = Math.max(2, Math.min(26, d.elapsed||1));
     const ease = t => 1-Math.pow(1-t,2);
     const actual = Array.from({length:pts},(_,i)=> Math.round(ease(i/(pts-1)) * d.enroll));
+    const screenArr = Array.from({length:pts},(_,i)=> Math.round(ease(i/(pts-1)) * d.screen));
     const target = Array.from({length:pts},(_,i)=> Math.round((i/(pts-1)) * d.enrollTarget));
     const xAt = i => padL + (W-padL-padR) * (i/(pts-1));
     actualPts = actual.map((v,i)=>[xAt(i), v]);
+    screenPts = screenArr.map((v,i)=>[xAt(i), v]);
     targetPts = target.map((v,i)=>[xAt(i), v]);
-    maxVal = Math.max(d.enrollTarget, d.enroll);
+    maxVal = Math.max(d.enrollTarget, d.enroll, d.screen);
+    todayX = actualPts[actualPts.length-1][0];
   } else {
     const today = new Date(); today.setHours(0,0,0,0);
-    const totalMs = Math.max(1, today - d.start);
+    /* 목표종료일이 오늘보다 뒤라면 축을 거기까지 늘려서, 목표선이 "오늘까지 다 채워야 함"처럼
+       보이지 않고 실제 남은 기간에 걸친 필요 페이스를 보여주도록 함 */
+    const hasRealTargetEnd = d.targetEnd && d.targetEnd.getTime() > today.getTime();
+    const axisEnd = hasRealTargetEnd ? d.targetEnd : today;
+    axisExtended = hasRealTargetEnd;
+    if(axisExtended) axisEndLabel = `목표종료 ${gdshort(axisEnd)}`;
+    const totalMs = Math.max(1, axisEnd - d.start);
     const xAt = dt => padL + (W-padL-padR) * Math.min(1, Math.max(0, (dt-d.start)/totalMs));
     const series = [{date:d.start, cum:0}, ...d.timeline];
     if(!series.length || series[series.length-1].date.getTime() !== today.getTime()){
       series.push({date: today, cum: d.enroll});
     }
     actualPts = series.map(pt=>[xAt(pt.date), pt.cum]);
-    maxVal = d.enroll;
+    const screenSeries = [{date:d.start, cum:0}, ...(d.screenTimeline||[])];
+    if(!screenSeries.length || screenSeries[screenSeries.length-1].date.getTime() !== today.getTime()){
+      screenSeries.push({date: today, cum: d.screen});
+    }
+    screenPts = screenSeries.map(pt=>[xAt(pt.date), pt.cum]);
+    maxVal = Math.max(d.enroll, d.screen);
     if(hasTarget){
       maxVal = Math.max(maxVal, d.enrollTarget);
-      targetPts = [[xAt(d.start), 0], [xAt(today), d.enrollTarget]];
+      targetPts = [[xAt(d.start), 0], [xAt(axisEnd), d.enrollTarget]];
     }
+    todayX = xAt(today);
   }
   const maxY = Math.max(10, Math.ceil(maxVal*1.15/10)*10 || 10);
   const yAt = v => H-padB - (H-padT-padB) * (v/maxY);
@@ -1470,18 +1588,29 @@ function renderEnrollCharts(pid){
   const lastX = actualPts[actualPts.length-1][0];
   const firstX = actualPts[0][0];
   const areaPath = linePath(actualPts) + ` L${lastX},${H-padB} L${firstX},${H-padB} Z`;
-  const todayX = lastX;
+  /* 목표선 끝에 숫자 라벨(예: "목표 120") — 선이 차트 위쪽 가장자리에 너무 붙으면 라벨이 잘리므로 살짝 아래로 내림 */
+  let targetLabel = '';
+  if(targetPts){
+    const tEnd = targetPts[targetPts.length-1];
+    const ly = Math.max(padT+9, yAt(tEnd[1])-6);
+    targetLabel = `<text x="${tEnd[0]-2}" y="${ly}" text-anchor="end" font-size="9.5" font-weight="600" fill="${holdC}">목표 ${Math.round(tEnd[1])}</text>`;
+  }
   svg.innerHTML = `
     <defs><linearGradient id="enAreaGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${primary}" stop-opacity=".22"/><stop offset="100%" stop-color="${primary}" stop-opacity="0"/>
     </linearGradient></defs>
     ${grid}
     <path d="${areaPath}" fill="url(#enAreaGrad)" stroke="none"/>
+    ${screenPts?`<path d="${linePath(screenPts)}" fill="none" stroke="${planC}" stroke-width="2" stroke-dasharray="3 2.5"/>`:''}
     ${targetPts?`<path d="${linePath(targetPts)}" fill="none" stroke="${holdC}" stroke-width="1.6" stroke-dasharray="4 3"/>`:''}
     <path d="${linePath(actualPts)}" fill="none" stroke="${primary}" stroke-width="2.2"/>
+    ${targetLabel}
     <line x1="${todayX}" y1="${padT}" x2="${todayX}" y2="${H-padB}" stroke="${muted}" stroke-width="1" stroke-dasharray="2 2"/>
     <text x="${padL}" y="${H-4}" font-size="9" fill="${muted}">Start</text>
-    <text x="${W-padR}" y="${H-4}" text-anchor="end" font-size="9" fill="${muted}">Today</text>
+    ${axisExtended
+      ? `<text x="${todayX}" y="${H-4}" text-anchor="middle" font-size="9" fill="${muted}">Today</text>
+         <text x="${W-padR}" y="${H-4}" text-anchor="end" font-size="9" fill="${muted}">${axisEndLabel}</text>`
+      : `<text x="${W-padR}" y="${H-4}" text-anchor="end" font-size="9" fill="${muted}">Today</text>`}
   `;
 }
 
@@ -1517,7 +1646,8 @@ function drawGantt(pid){
   tasks.forEach(t=>{ const g = t['분류[업무그룹]']||'기타'; (groups[g]=groups[g]||[]).push(t); });
 
   const rows = [];
-  Object.entries(groups).forEach(([gname,gtasks])=>{
+  Object.entries(groups).forEach(([gname,gtasksRaw])=>{
+    const gtasks = sortTasksByDate(gtasksRaw);
     let mn=null,mx=null;
     gtasks.forEach(t=>{
       [gpd(t['예상시작']),gpd(t['예상종료']),gpd(t['실제시작']),gpd(t['실제종료'])].forEach(d=>{
@@ -1526,7 +1656,7 @@ function drawGantt(pid){
     });
     rows.push({k:'cat', lb:gname, s:mn, e:mx});
     gtasks.forEach(t=>rows.push({
-      k:'task', id:t['ID'], lb:t['업무명'],
+      k:'task', id:t['ID'] ?? t['업무ID'], lb:t['업무명'],
       ps:gpd(t['예상시작']), pe:gpd(t['예상종료']),
       as2:gpd(t['실제시작']), ae2:gpd(t['실제종료']),
       st: isHold(t)?'홀딩':(t['상태']||''), asg:t['담당자']||'-',
@@ -1797,6 +1927,12 @@ function gToday(){
     if(curView==='gantt') syncGanttSticky();
   });
 })();
+
+/* ── AppSheet 딥링크 지원 ──
+   "간트차트 가기" 등 AppSheet 액션이 ?p=<프로젝트ID>&view=<task|gantt|story|enroll> 형태로
+   진입시키므로, loadData()가 데이터를 받아온 뒤 해당 프로젝트·탭을 바로 열어주도록
+   selId/curView를 URL에서 미리 읽어둔다. (loadData() 안의
+   `if(selId && RAW.projects.some(...)) renderDetail(selId)` 로직이 이 값을 그대로 사용) */
 (function initFromUrl(){
   try{
     const params = new URLSearchParams(location.search);
@@ -1806,6 +1942,7 @@ function gToday(){
     if(view && ['task','gantt','story','enroll'].includes(view)) curView = view;
   }catch(e){}
 })();
+
 loadData();
 setInterval(loadData, 60000);
 </script>
