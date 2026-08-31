@@ -443,6 +443,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-detail-panel .pl-edit-link{font-size:11px;font-weight:700;color:var(--primary);text-decoration:none;background:var(--primary-lt);padding:3px 10px;border-radius:20px}
 .pl-detail-panel .pl-edit-link:hover{background:var(--primary);color:#fff}
 .pl-detail-panel .pl-d-sub{font-size:14.5px;color:var(--muted);margin-bottom:18px}
+.pl-detail-panel .pl-d-note{font-size:13px;background:var(--primary-lt);border-radius:8px;padding:9px 12px;margin:-8px 0 18px;white-space:pre-wrap;line-height:1.5}
 .pl-detail-panel .pl-d-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
 .pl-loghist{border-left:2px solid var(--border);padding-left:18px;margin-left:4px}
 .pl-loghist .pl-lh-item{position:relative;margin-bottom:20px}
@@ -767,7 +768,10 @@ function renderPipelineView(){
     const name = it['연구명'];
     const partner = it['파트너사'];
     const d = plDaysSince(it['최근업데이트일']);
-    const log = plLastLog(it['ID'], leadLog);
+    /* "영업일지_로그"에 등록된 날짜별 로그가 있으면 그걸 우선 보여주고,
+       없으면 리드 자체의 "비고" 필드를 최근 메모로 대신 보여준다.
+       (담당자가 로그 시트가 아니라 리드의 비고만 수정하는 경우가 많아서, 그것도 카드에 바로 반영되게 함) */
+    const log = plLastLog(it['ID'], leadLog) || it['비고'] || null;
     return {...it, _name:name, _partner:partner, _days:d, _log:log};
   });
   const nLead = leads.length;
@@ -831,6 +835,7 @@ function plOpenDetail(type, id){
     <button class="pl-d-close" onclick="plCloseDetail()">✕</button>
     <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}${editUrl ? `<a href="${editUrl}" target="_blank" rel="noopener" class="pl-edit-link" onclick="event.stopPropagation()">📱 AppSheet에서 수정</a>` : ''}</h3>
     <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(item['진행단계']||'발굴')}</div>
+    ${item['비고'] ? `<div class="pl-d-note">📝 ${esc(item['비고'])}</div>` : ''}
     <div class="pl-loghist">${logs.length ? logs.map(l=>`
       <div class="pl-lh-item"><div class="pl-lh-date">${esc(l['날짜']||'날짜 미상')}</div><div class="pl-lh-txt">${esc(l['내용']||'')}</div></div>
     `).join('') : '<div style="color:var(--muted);font-size:12.5px">등록된 업데이트 로그가 없습니다.</div>'}</div>
