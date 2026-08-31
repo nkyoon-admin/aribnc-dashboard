@@ -835,6 +835,7 @@ function plCloseDetail(){
 }
 
 function isHold(t){ return t['홀딩']==='TRUE'||t['홀딩']===true; }
+function isProjHold(p){ return !!p && p['상태']==='중단'; }
 function isDone(t){ return t['상태']==='완료'||t['상태']==='종료'; }
 function isProg(t){ return t['상태']==='진행 중'||t['상태']==='진행중'; }
 function statusCls(t){ if(isHold(t)) return 's-hold'; if(isDone(t)) return 's-done'; if(isProg(t)) return 's-prog'; return 's-plan'; }
@@ -910,7 +911,7 @@ function onSearch(v){ srchQ = v.trim().toLowerCase(); renderPlist(); }
 
 function getFilteredProjects(){
   return RAW.projects.filter(p=>{
-    if(curFilter==='홀딩'){ if(!projTasks(p['ID']).some(isHold)) return false; }
+    if(curFilter==='홀딩'){ if(!(isProjHold(p) || projTasks(p['ID']).some(isHold))) return false; }
     else if(curFilter!=='전체' && p['분류']!==curFilter) return false;
     if(srchQ){
       const hay = [p['프로젝트명'],p['의뢰사'],p['기능성'],p['PI'],p['실시기관']].filter(Boolean).join(' ').toLowerCase();
@@ -931,7 +932,8 @@ function renderPlist(){
     const r = rate(pid);
     const progCnt = tasks.filter(isProg).length;
     const holdCnt = tasks.filter(isHold).length;
-    return `<div class="pc${selId===pid?' on':''}${holdCnt>0?' hold-proj':''}" onclick="selectProj('${esc(pid)}')">
+    const projHold = isProjHold(p);
+    return `<div class="pc${selId===pid?' on':''}${(holdCnt>0||projHold)?' hold-proj':''}" onclick="selectProj('${esc(pid)}')">
       <div class="pid">${esc(pid)}</div>
       <span class="tbadge">${esc(p['분류']||'-')}</span>
       <div class="pname">${esc(p['프로젝트명'])}</div>
@@ -939,7 +941,7 @@ function renderPlist(){
       <div class="pmeta">
         <span>👤 ${esc(p['PI']||'-')}</span><span>🏢 ${esc(p['의뢰사']||'-')}</span>
         ${progCnt>0?`<span style="color:var(--prog);font-weight:700">● 진행 ${progCnt}</span>`:''}
-        ${holdCnt>0?`<span style="color:var(--hold);font-weight:700">🔴 ${holdCnt}</span>`:''}
+        ${projHold?`<span style="color:var(--hold);font-weight:700">🔴 중단</span>`:holdCnt>0?`<span style="color:var(--hold);font-weight:700">🔴 ${holdCnt}</span>`:''}
       </div>
       <div class="pbar"><div class="pfill" style="width:${r}%"></div></div>
       <div style="font-size:11px;color:var(--muted);margin-top:3px">${r}% 완료 · ${tasks.length}건</div>
@@ -981,7 +983,7 @@ function renderDetail(pid){
       <div class="dh-top">
         <div>
           <div style="font-size:12px;color:var(--muted);font-family:monospace;margin-bottom:2px">${esc(pid)}</div>
-          <h2>${esc(p['프로젝트명'])}</h2>
+          <h2>${esc(p['프로젝트명'])}${isProjHold(p)?' <span style="font-size:12px;font-weight:800;color:var(--hold);background:var(--hold-bg);padding:2px 8px;border-radius:8px;vertical-align:middle">🔴 중단</span>':''}</h2>
           <span class="ftag">✦ ${esc(p['기능성']||'-')}</span>
         </div>
         <div style="display:flex;align-items:flex-start;gap:12px">
