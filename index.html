@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>아리비앤씨 프로젝트 관리</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -493,6 +494,13 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 </head>
 <body>
 
+<div id="loginGate" style="position:fixed;inset:0;z-index:9999;background:var(--bg,#f6f4ee);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px">
+  <div style="font-size:15px;font-weight:700;color:var(--text,#211d15)">📊 아리비앤씨 프로젝트 관리</div>
+  <div style="font-size:13px;color:var(--muted,#75705f);max-width:320px">아리비앤씨 계정으로 로그인해야 데이터를 볼 수 있습니다</div>
+  <div id="g_id_signin_container"></div>
+  <div id="loginError" style="display:none;font-size:12px;color:#b0413e;max-width:320px"></div>
+</div>
+
 <div class="hdr">
   <div>
     <h1>📊 아리비앤씨 프로젝트 관리</h1>
@@ -558,6 +566,42 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 // 이전(실제로는 배포되지 않았던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_OLD = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
+/* ── 구글 로그인(도메인 검증) ──
+   대시보드 API(Apps Script)는 이제 구글 로그인 토큰을 요구한다.
+   여기서 로그인 버튼을 렌더링하고, 로그인 성공 시 받은 ID 토큰을
+   세션 동안(sessionStorage) 기억해두었다가 API 호출마다 함께 보낸다. */
+const OAUTH_CLIENT_ID = '708897562205-vim7t5v7jdcs2apsc30blrs2gnmhoua8.apps.googleusercontent.com';
+let ID_TOKEN = null;
+try{ ID_TOKEN = sessionStorage.getItem('aribnc_id_token'); }catch(e){}
+
+function showLoginGate(){
+  const g = document.getElementById('loginGate');
+  if(g) g.style.display = 'flex';
+}
+function hideLoginGate(){
+  const g = document.getElementById('loginGate');
+  if(g) g.style.display = 'none';
+}
+function handleCredentialResponse(response){
+  ID_TOKEN = response.credential;
+  try{ sessionStorage.setItem('aribnc_id_token', ID_TOKEN); }catch(e){}
+  hideLoginGate();
+  loadData();
+}
+(function initGoogleSignIn(){
+  function ready(){
+    if(!window.google || !google.accounts || !google.accounts.id){ setTimeout(ready, 200); return; }
+    google.accounts.id.initialize({
+      client_id: OAUTH_CLIENT_ID,
+      callback: handleCredentialResponse
+    });
+    const c = document.getElementById('g_id_signin_container');
+    if(c) google.accounts.id.renderButton(c, { theme:'outline', size:'large', text:'signin_with', locale:'ko' });
+    if(!ID_TOKEN) google.accounts.id.prompt();
+  }
+  ready();
+})();
+
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
 /* AppSheet에서 Tasks 테이블 행 하나를 바로 여는 딥링크용 View 이름.
    AppSheet 편집기 → UX → Views 에서 Tasks 테이블의 Detail(또는 Form) view 이름을 확인해서
@@ -717,8 +761,17 @@ async function loadData(){
   st.textContent = '불러오는 중...';
   st.classList.remove('err');
   try{
-    const res = await fetch(GANTT_API_URL);
+    if(!ID_TOKEN){ st.textContent = '로그인이 필요합니다'; return; }
+    const res = await fetch(GANTT_API_URL + '?token=' + encodeURIComponent(ID_TOKEN));
     const json = await res.json();
+    if(json && json.error === 'unauthorized'){
+      st.textContent = '⚠️ 로그인이 만료되었거나 권한이 없습니다';
+      st.classList.add('err');
+      ID_TOKEN = null;
+      try{ sessionStorage.removeItem('aribnc_id_token'); }catch(e){}
+      showLoginGate();
+      return;
+    }
     RAW.projects = json.projects || [];
     RAW.tasks = json.tasks || [];
     RAW.changes = json.changes || [];
@@ -2103,8 +2156,8 @@ function gToday(){
   }catch(e){}
 })();
 
-loadData();
-setInterval(loadData, 60000);
+if(ID_TOKEN){ hideLoginGate(); loadData(); } else { showLoginGate(); }
+setInterval(()=>{ if(ID_TOKEN) loadData(); }, 60000);
 </script>
 </body>
 </html>
