@@ -405,12 +405,19 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 }
 
 /* ── 영업파이프라인 (전사 공통 화면, 프로젝트 비종속) ── */
-.pl-wrap{padding:16px 24px 40px;display:flex;gap:20px;align-items:flex-start}
+.pl-wrap{padding:16px 24px 40px;display:flex;flex-direction:column;gap:16px}
+.pl-tabs{display:flex;gap:8px;border-bottom:1px solid var(--border)}
+.pl-tab{padding:10px 18px;font-size:13.5px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.pl-tab:hover{color:var(--text)}
+.pl-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.pl-body{display:flex;gap:20px;align-items:flex-start}
 .pl-main{flex:1;min-width:0}
 .pl-note{background:var(--primary-lt);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5}
 .pl-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .pl-chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;box-shadow:var(--sh)}
 .pl-chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.pl-add-chip{display:inline-flex;align-items:center;text-decoration:none;background:var(--primary);color:#fff!important;border-color:var(--primary)}
+.pl-add-chip:hover{opacity:.88}
 .pl-sum{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
 .pl-sum-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:var(--sh)}
 .pl-sum-card .n{font-size:20px;font-weight:800}
@@ -436,6 +443,30 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-card .pl-dbadge{font-weight:800;padding:1px 6px;border-radius:8px;background:var(--hold-bg);color:var(--hold)}
 .pl-card .pl-dbadge.ok{background:var(--done-bg);color:var(--done)}
 .pl-card .pl-lastlog{margin-top:6px;padding-top:6px;border-top:1px dashed var(--border2);font-size:10.5px;color:var(--text);line-height:1.5;opacity:.85}
+.pl-mat-explorer{display:flex;gap:16px;align-items:flex-start}
+.pl-mat-list{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+.pl-mat-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 12px;cursor:pointer;box-shadow:var(--sh)}
+.pl-mat-item:hover{border-color:var(--primary)}
+.pl-mat-item.on{border-color:var(--primary);background:var(--primary-lt)}
+.pl-mat-item-name{font-size:13px;font-weight:800;color:var(--text)}
+.pl-mat-item-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.pl-mat-stale{color:var(--hold);font-weight:700}
+.pl-mat-detail{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.pl-mat-detail-title{font-size:16px;font-weight:800;color:var(--text)}
+.pl-mat-stage-group{display:flex;flex-direction:column;gap:8px}
+.pl-mat-stage-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;padding-bottom:7px;border-bottom:2px solid var(--stagecolor)}
+.pl-mat-stage-head i{width:8px;height:8px;border-radius:50%;background:var(--stagecolor)}
+.pl-mat-stage-head span{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700;background:var(--primary-lt);padding:1px 7px;border-radius:10px}
+.pl-mat-supplier{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:var(--sh)}
+.pl-mat-supplier-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pl-mat-supplier-head b{font-size:13px;color:var(--text)}
+.pl-updrow-mini{margin-left:auto;font-size:10.5px;color:var(--muted)}
+.pl-mat-edit-link{font-size:11px;font-weight:700;color:var(--primary);text-decoration:none;background:var(--primary-lt);padding:2px 8px;border-radius:12px;white-space:nowrap;flex-shrink:0}
+.pl-mat-edit-link:hover{background:var(--primary);color:#fff}
+.pl-mat-history{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border2);display:flex;flex-direction:column;gap:6px}
+.pl-mh-item{font-size:11.5px;color:var(--text);line-height:1.5}
+.pl-mh-date{font-weight:800;color:var(--muted);margin-right:6px}
+.pl-mh-empty{font-size:11px;color:var(--muted)}
 .pl-empty-col{color:var(--muted);font-size:11.5px;text-align:center;padding:14px 4px}
 .pl-detail-panel{display:none;flex:0 0 480px;width:480px;max-width:48vw;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-y:auto;padding:28px;box-shadow:var(--sh);position:sticky;top:16px;max-height:calc(100vh - 120px)}
 .pl-detail-panel.open{display:block}
@@ -450,7 +481,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-loghist .pl-lh-item::before{content:'';position:absolute;left:-22px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--primary)}
 .pl-loghist .pl-lh-date{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:4px}
 .pl-loghist .pl-lh-txt{font-size:15px;color:var(--text);line-height:1.7}
-@media (max-width: 1100px){.pl-board{grid-template-columns:repeat(2,1fr)}.pl-sum{grid-template-columns:repeat(2,1fr)}.pl-wrap{flex-direction:column}.pl-detail-panel{width:100%;max-width:100%;flex-basis:auto;position:static}}
+@media (max-width: 1100px){.pl-board{grid-template-columns:repeat(2,1fr)}.pl-sum{grid-template-columns:repeat(2,1fr)}.pl-body{flex-direction:column}.pl-detail-panel{width:100%;max-width:100%;flex-basis:auto;position:static}.pl-mat-explorer{flex-direction:column}.pl-mat-list{width:100%;flex-direction:row;flex-wrap:wrap}.pl-mat-item{flex:1 1 160px}}
 
 @media (max-width: 900px){
   .main{flex-direction:column}
@@ -492,7 +523,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 <div class="nav">
   <input type="text" id="srch" placeholder="🔍 프로젝트명, 의뢰사, 기능성, PI 검색..." oninput="onSearch(this.value)">
   <div id="filter-pills"></div>
-  <button class="nav-pl-btn" id="pl-nav-btn" onclick="togglePipeline()" style="margin-left:auto">💼 연구영업 파이프라인</button>
+  <button class="nav-pl-btn" id="pl-nav-btn" onclick="togglePipeline()" style="margin-left:auto">💼 영업·원료 파이프라인</button>
 </div>
 
 <div class="main" id="mainArea">
@@ -505,8 +536,14 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 </div>
 
 <div class="pl-wrap" id="plWrap" style="display:none">
-  <div class="pl-main" id="plMain"></div>
-  <div class="pl-detail-panel" id="plDetailPanel"></div>
+  <div class="pl-tabs" id="plTabs">
+    <div class="pl-tab" id="pl-tab-lead" onclick="plSetTab('lead')">🧪 연구영업 파이프라인</div>
+    <div class="pl-tab" id="pl-tab-mat" onclick="plSetTab('mat')">🧫 원료영업 파이프라인</div>
+  </div>
+  <div class="pl-body">
+    <div class="pl-main" id="plMain"></div>
+    <div class="pl-detail-panel" id="plDetailPanel"></div>
+  </div>
 </div>
 
 <div class="zoom-modal" id="zoomModal" onclick="if(event.target===this) closeZoomModal()">
@@ -538,6 +575,22 @@ function appsheetProjectUrl(pid){
 const LEAD_DETAIL_VIEW = '영업리드_마스터_Detail';
 function appsheetLeadUrl(id){
   return `${APPSHEET_URL}#view=${encodeURIComponent(LEAD_DETAIL_VIEW)}&row=${encodeURIComponent(id)}`;
+}
+/* AppSheet에서 "원료리드_마스터" 테이블의 특정 원료 행을 바로 여는 딥링크 (원료영업 파이프라인 카드의 "AppSheet에서 수정" 버튼용) */
+const MATERIAL_DETAIL_VIEW = '원료리드_마스터_Detail';
+function appsheetMaterialUrl(id){
+  return `${APPSHEET_URL}#view=${encodeURIComponent(MATERIAL_DETAIL_VIEW)}&row=${encodeURIComponent(id)}`;
+}
+/* 새 리드/원료(업체)를 추가할 때 쓰는 AppSheet Form view 딥링크.
+   row 파라미터 없이 Form view로 이동하면 AppSheet가 새 행 추가 화면으로 연다.
+   (AppSheet에서 테이블 추가 시 자동 생성되는 "<테이블명>_Form" view 이름을 그대로 사용) */
+const LEAD_FORM_VIEW = '영업리드_마스터_Form';
+function appsheetLeadAddUrl(){
+  return `${APPSHEET_URL}#view=${encodeURIComponent(LEAD_FORM_VIEW)}`;
+}
+const MATERIAL_FORM_VIEW = '원료리드_마스터_Form';
+function appsheetMaterialAddUrl(){
+  return `${APPSHEET_URL}#view=${encodeURIComponent(MATERIAL_FORM_VIEW)}`;
 }
 function openTaskInAppSheet(taskId, e){
   if(e) e.stopPropagation();
@@ -691,17 +744,24 @@ async function loadData(){
 }
 
 /* ── 영업파이프라인 (전사 공통, 프로젝트 비종속) ──
-   "영업리드_마스터"/"원료계약_마스터" 시트에 실제 행이 있으면 그걸 쓰고,
-   아직 GAS 연동 전(RAW.pipelineLeads/pipelineMaterials가 비어있음)이면
-   방금 정리한 엑셀 내용을 그대로 예시(목업)로 보여준다. */
+   "영업리드_마스터"(연구영업 리드)와 "원료리드_마스터"(원료영업 리드)는 서로 성격이 다른
+   영업 활동이라 하나로 합치지 않고, 탭으로 구분된 두 개의 별도 칸반 보드로 보여준다.
+   (혹시 GAS 연동이 끊겨 RAW.pipelineLeads/pipelineMaterials가 비어있으면
+   방금 정리한 엑셀 내용을 그대로 예시(목업)로 대신 보여준다.) */
 let pipelineMode = false;
-let plFilter = 'all'; /* all | lead | mat | stale */
+let plTab = 'lead'; /* lead(연구영업) | mat(원료영업) */
+let plFilter = 'all'; /* all | stale */
+let plMatSelected = null; /* 원료영업 탭에서 왼쪽 목록에서 선택된 원료명 */
+/* key = 시트 "진행단계" 컬럼에 실제로 저장된 값(매칭용, 변경 금지).
+   matLabel = 원료영업 탭에서 대신 보여줄 표시용 이름 — 원료 소싱 흐름(샘플/협상/계약)에
+   맞게 이름만 다르게 보여주고, 실제 데이터 매칭은 key 그대로 사용한다.
+   (시트 값 자체를 바꾸려면 원료리드_마스터의 "진행단계" 컬럼을 직접 수정해야 함) */
 const PL_STAGES = [
-  {key:'발굴', color:'var(--hold)'},
-  {key:'협의중', color:'var(--prog)'},
-  {key:'견적/계약검토', color:'var(--plan-c)'},
-  {key:'계약완료', color:'var(--done)'},
-  {key:'보류/중단', color:'var(--muted)'},
+  {key:'발굴', matLabel:'발굴', color:'var(--hold)'},
+  {key:'협의중', matLabel:'협상중', color:'var(--prog)'},
+  {key:'견적/계약검토', matLabel:'샘플/단가협의', color:'var(--plan-c)'},
+  {key:'계약완료', matLabel:'계약완료', color:'var(--done)'},
+  {key:'보류/중단', matLabel:'보류/중단', color:'var(--muted)'},
 ];
 const PL_MOCK_LEADS = [
   {ID:'L001', 연구명:'마가목', 파트너사:'신우코오퍼레이션', 진행단계:'계약완료', 최근업데이트일:'2026-07-22'},
@@ -741,6 +801,11 @@ function plDaysSince(dstr){
   const today = new Date(); today.setHours(0,0,0,0);
   return Math.round((today-d)/86400000);
 }
+function plStageLabel(type, key){
+  const s = PL_STAGES.find(x=>x.key===(key||'발굴'));
+  if(!s) return key||'발굴';
+  return type==='lead' ? s.key : s.matLabel;
+}
 function plLastLog(id, logArr){
   const rows = logArr.filter(r=>String(r['ID'])===String(id) && r['내용']);
   if(!rows.length) return null;
@@ -756,25 +821,34 @@ function togglePipeline(){
   if(pipelineMode) renderPipelineView();
 }
 function plSetFilter(f){ plFilter = f; renderPipelineView(); }
+function plSetTab(t){ plTab = t; plFilter = 'all'; plMatSelected = null; plCloseDetail(); renderPipelineView(); }
+function plSelectMaterial(i){ plMatSelected = (window._plMatNames||[])[i] || null; renderPipelineView(); }
 function renderPipelineView(){
+  document.getElementById('pl-tab-lead').classList.toggle('on', plTab==='lead');
+  document.getElementById('pl-tab-mat').classList.toggle('on', plTab==='mat');
+
   const wrap = document.getElementById('plMain');
-  /* 1단계: 연구영업(리드) 파이프라인만 우선 구축 — 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가 예정 */
-  const usingReal = RAW.pipelineLeads.length>0;
-  const leads = (usingReal ? RAW.pipelineLeads : PL_MOCK_LEADS).map(r=>({...r, _type:'lead'}));
-  const leadLog = usingReal ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG;
-  let items = [...leads];
+  const isLead = plTab==='lead';
+  const usingReal = isLead ? RAW.pipelineLeads.length>0 : RAW.pipelineMaterials.length>0;
+  const rawItems = isLead
+    ? (usingReal ? RAW.pipelineLeads : PL_MOCK_LEADS)
+    : (usingReal ? RAW.pipelineMaterials : PL_MOCK_MATERIALS);
+  const log = isLead
+    ? (usingReal ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG)
+    : (usingReal ? RAW.pipelineMaterialLog : PL_MOCK_MATERIAL_LOG);
+  const items = rawItems.map(r=>({...r, _type: isLead?'lead':'mat'}));
   const staleCut = 30;
   const withMeta = items.map(it=>{
-    const name = it['연구명'];
-    const partner = it['파트너사'];
+    const name = isLead ? it['연구명'] : it['원료명'];
+    const partner = isLead ? it['파트너사'] : it['공급사'];
     const d = plDaysSince(it['최근업데이트일']);
-    /* "영업일지_로그"에 등록된 날짜별 로그가 있으면 그걸 우선 보여주고,
-       없으면 리드 자체의 "비고" 필드를 최근 메모로 대신 보여준다.
-       (담당자가 로그 시트가 아니라 리드의 비고만 수정하는 경우가 많아서, 그것도 카드에 바로 반영되게 함) */
-    const log = plLastLog(it['ID'], leadLog) || it['비고'] || null;
-    return {...it, _name:name, _partner:partner, _days:d, _log:log};
+    /* "영업일지_로그"/원료 로그에 등록된 날짜별 로그가 있으면 그걸 우선 보여주고,
+       없으면 리드/원료 자체의 "비고" 필드를 최근 메모로 대신 보여준다.
+       (담당자가 로그 시트가 아니라 비고만 수정하는 경우가 많아서, 그것도 카드에 바로 반영되게 함) */
+    const lastLog = plLastLog(it['ID'], log) || it['비고'] || null;
+    return {...it, _name:name, _partner:partner, _days:d, _log:lastLog};
   });
-  const nLead = leads.length;
+  const nTotal = withMeta.length;
   const nStale = withMeta.filter(x=>x._days!==null && x._days>=staleCut).length;
   let filtered = withMeta;
   if(plFilter==='stale') filtered = withMeta.filter(x=>x._days!==null && x._days>=staleCut);
@@ -783,38 +857,108 @@ function renderPipelineView(){
   PL_STAGES.forEach(s=>stageCounts[s.key]=0);
   filtered.forEach(x=>{ const st = x['진행단계']||'발굴'; if(stageCounts[st]===undefined) stageCounts[st]=0; stageCounts[st]++; });
 
+  const label = isLead ? '"영업리드_마스터"(연구영업)' : '"원료리드_마스터"(원료영업)';
+  const matAddHint = !isLead ? ' 새 업체를 같은 원료 밑에 묶으려면, 원료명을 기존 원료와 정확히 똑같이 입력해주세요.' : '';
+  const editDeleteHint = ' 각 항목의 "✏️ 수정" 버튼을 누르면 AppSheet 화면이 열리고, 그 화면 상단의 휴지통 아이콘으로 삭제도 할 수 있습니다.';
   const noteHtml = usingReal
-    ? `<div class="pl-note">📋 "영업리드_마스터" 시트에 입력된 실제 데이터를 보여줍니다. (원료계약 파이프라인은 다음 단계에서 별도로 추가될 예정입니다)</div>`
-    : `<div class="pl-note">📌 1단계: 연구영업(리드) 파이프라인 예시 화면입니다 — Google Sheets/GAS 연동 전이라 방금 정리한 엑셀 내용을 그대로 보여드립니다. 연동되면 실제 데이터로 자동 전환됩니다. 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가할 예정입니다.</div>`;
+    ? `<div class="pl-note">📋 ${label} 시트에 입력된 실제 데이터를 보여줍니다.${matAddHint}${editDeleteHint}</div>`
+    : `<div class="pl-note">📌 ${isLead?'연구':'원료'}영업 파이프라인 예시 화면입니다 — Google Sheets/GAS 연동 전이라 방금 정리한 엑셀 내용을 그대로 보여드립니다. 연동되면 실제 데이터로 자동 전환됩니다.${matAddHint}</div>`;
 
+  const addUrl = isLead ? appsheetLeadAddUrl() : appsheetMaterialAddUrl();
+  const addLabel = isLead ? '+ 새 리드 추가' : '+ 새 원료·업체 추가';
   const chips = `<div class="pl-chips">
-    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nLead}</div>
+    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nTotal}</div>
     <div class="pl-chip ${plFilter==='stale'?'on':''}" onclick="plSetFilter('stale')">⚠️ 30일 이상 업데이트 없음 ${nStale}</div>
+    <a class="pl-chip pl-add-chip" href="${addUrl}" target="_blank" rel="noopener" style="margin-left:auto">${addLabel}</a>
   </div>`;
 
-  const sumHtml = `<div class="pl-sum">${PL_STAGES.map(s=>`
-    <div class="pl-sum-card"><div class="l"><i style="background:${s.color}"></i>${esc(s.key)}</div><div class="n">${stageCounts[s.key]||0}</div></div>
-  `).join('')}</div>`;
-
-  const boardHtml = `<div class="pl-board">${PL_STAGES.map(s=>{
-    const rows = filtered.filter(x=>(x['진행단계']||'발굴')===s.key);
-    return `<div class="pl-col">
-      <div class="pl-col-head" style="--stagecolor:${s.color}"><i></i><b>${esc(s.key)}</b><span>${rows.length}건</span></div>
-      ${rows.length ? rows.map(r=>plCardHtml(r)).join('') : '<div class="pl-empty-col">해당 없음</div>'}
-    </div>`;
-  }).join('')}</div>`;
-
-  wrap.innerHTML = `${noteHtml}${chips}${sumHtml}${boardHtml}`;
   window._plItemsById = {}; withMeta.forEach(x=>window._plItemsById[x._type+':'+x['ID']] = x);
-  window._plLogs = {lead:leadLog, mat:[]};
+  window._plLogs = {lead: isLead?log:[], mat: isLead?[]:log};
+
+  if(isLead){
+    /* 연구영업: 기존과 동일하게 5단계 칸반 보드 */
+    const sumHtml = `<div class="pl-sum">${PL_STAGES.map(s=>`
+      <div class="pl-sum-card"><div class="l"><i style="background:${s.color}"></i>${esc(s.key)}</div><div class="n">${stageCounts[s.key]||0}</div></div>
+    `).join('')}</div>`;
+
+    const boardHtml = `<div class="pl-board">${PL_STAGES.map(s=>{
+      const rows = filtered.filter(x=>(x['진행단계']||'발굴')===s.key);
+      return `<div class="pl-col">
+        <div class="pl-col-head" style="--stagecolor:${s.color}"><i></i><b>${esc(s.key)}</b><span>${rows.length}건</span></div>
+        ${rows.length ? rows.map(r=>plCardHtml(r)).join('') : '<div class="pl-empty-col">해당 없음</div>'}
+      </div>`;
+    }).join('')}</div>`;
+
+    wrap.innerHTML = `${noteHtml}${chips}${sumHtml}${boardHtml}`;
+    return;
+  }
+
+  /* 원료영업: 왼쪽에 원료명을 나열하고, 원료를 선택하면 그 원료의 업체(공급사)들을
+     협상중/샘플·단가협의/계약완료/보류·중단 단계별로 묶어서 히스토리와 함께 보여준다.
+     (원료 하나에 공급사 후보가 여러 곳 붙는 실제 소싱 흐름에 맞춘 구조) */
+  const matGroups = {};
+  filtered.forEach(x=>{
+    const key = x._name || '(이름 없음)';
+    (matGroups[key] = matGroups[key] || []).push(x);
+  });
+  const matNames = Object.keys(matGroups);
+  window._plMatNames = matNames;
+  if(!plMatSelected || !matGroups[plMatSelected]) plMatSelected = matNames[0] || null;
+
+  const listHtml = matNames.length ? matNames.map((name,i)=>{
+    const rows = matGroups[name];
+    const stale = rows.some(r=>r._days!==null && r._days>=staleCut);
+    return `<div class="pl-mat-item ${name===plMatSelected?'on':''}" onclick="plSelectMaterial(${i})">
+      <div class="pl-mat-item-name">${esc(name)}</div>
+      <div class="pl-mat-item-meta">${rows.length}개 업체${stale?' · <span class="pl-mat-stale">⚠️ 지연</span>':''}</div>
+    </div>`;
+  }).join('') : '<div class="pl-empty-col">해당 없음</div>';
+
+  window._plMatLog = log;
+  const selRows = plMatSelected ? matGroups[plMatSelected] : [];
+  const detailBody = plMatSelected ? PL_STAGES.map(s=>{
+    const rows = selRows.filter(r=>(r['진행단계']||'발굴')===s.key);
+    if(!rows.length) return '';
+    return `<div class="pl-mat-stage-group">
+      <div class="pl-mat-stage-head" style="--stagecolor:${s.color}"><i></i>${esc(s.matLabel)}<span>${rows.length}건</span></div>
+      ${rows.map(r=>plMatSupplierCard(r)).join('')}
+    </div>`;
+  }).join('') || '<div class="pl-empty-col">해당 단계에 업체가 없습니다.</div>' : '<div class="pl-empty-col">왼쪽에서 원료를 선택하세요.</div>';
+
+  const detailHtml = `${plMatSelected ? `<div class="pl-mat-detail-title">🧫 ${esc(plMatSelected)}</div>` : ''}${detailBody}`;
+
+  const explorerHtml = `<div class="pl-mat-explorer">
+    <div class="pl-mat-list">${listHtml}</div>
+    <div class="pl-mat-detail">${detailHtml}</div>
+  </div>`;
+
+  wrap.innerHTML = `${noteHtml}${chips}${explorerHtml}`;
+}
+function plMatSupplierCard(r){
+  const dLabel = r._days===null ? '기록없음' : `D+${r._days}`;
+  const dCls = (r._days!==null && r._days<30) ? 'ok' : '';
+  const updTxt = r['최근업데이트일'] ? `최근 업데이트 ${String(r['최근업데이트일']).slice(5).replace('-', '.')}` : '최근 업데이트 -';
+  const logs = (window._plMatLog||[]).filter(l=>String(l['ID'])===String(r['ID']));
+  logs.sort((a,b)=> String(b['날짜']||'').localeCompare(String(a['날짜']||'')));
+  const historyHtml = logs.length
+    ? logs.map(l=>`<div class="pl-mh-item"><span class="pl-mh-date">${esc(l['날짜']||'날짜 미상')}</span>${esc(l['내용']||'')}</div>`).join('')
+    : (r['비고'] ? `<div class="pl-mh-item"><span class="pl-mh-date">비고</span>${esc(r['비고'])}</div>` : '<div class="pl-mh-empty">등록된 히스토리가 없습니다.</div>');
+  const editUrl = appsheetMaterialUrl(r['ID']);
+  return `<div class="pl-mat-supplier">
+    <div class="pl-mat-supplier-head">
+      <b>${esc(r._partner||'공급사 미정')}</b>
+      <span class="pl-updrow-mini">${updTxt}</span>
+      <span class="pl-dbadge ${dCls}">${dLabel}</span>
+      ${editUrl ? `<a class="pl-mat-edit-link" href="${editUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="AppSheet에서 수정하거나 삭제할 수 있습니다 (화면 상단 휴지통 아이콘)">✏️ 수정/삭제</a>` : ''}
+    </div>
+    <div class="pl-mat-history">${historyHtml}</div>
+  </div>`;
 }
 function plCardHtml(r){
   const dLabel = r._days===null ? '기록없음' : `D+${r._days}`;
   const dCls = (r._days!==null && r._days<30) ? 'ok' : '';
   const updTxt = r['최근업데이트일'] ? `최근 업데이트 ${String(r['최근업데이트일']).slice(5).replace('-', '.')}` : '최근 업데이트 -';
-  const editBtn = r._type==='lead'
-    ? `<a class="pl-card-edit" href="${appsheetLeadUrl(r['ID'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="AppSheet에서 바로 수정">✏️</a>`
-    : '';
+  const editBtn = `<a class="pl-card-edit" href="${r._type==='lead' ? appsheetLeadUrl(r['ID']) : appsheetMaterialUrl(r['ID'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="AppSheet에서 수정하거나 삭제할 수 있습니다 (화면 상단 휴지통 아이콘)">✏️</a>`;
   return `<div class="pl-card" onclick="plOpenDetail('${r._type}','${esc(r['ID'])}')">
     ${editBtn}
     <span class="pl-tag ${r._type==='lead'?'lead':'mat'}">${r._type==='lead'?'🧪 리드':'🧫 원료'}</span>
@@ -830,11 +974,11 @@ function plOpenDetail(type, id){
   const logs = (window._plLogs[type]||[]).filter(r=>String(r['ID'])===String(id));
   logs.sort((a,b)=> String(b['날짜']||'').localeCompare(String(a['날짜']||'')));
   const panel = document.getElementById('plDetailPanel');
-  const editUrl = type==='lead' ? appsheetLeadUrl(id) : '';
+  const editUrl = type==='lead' ? appsheetLeadUrl(id) : appsheetMaterialUrl(id);
   panel.innerHTML = `
     <button class="pl-d-close" onclick="plCloseDetail()">✕</button>
-    <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}${editUrl ? `<a href="${editUrl}" target="_blank" rel="noopener" class="pl-edit-link" onclick="event.stopPropagation()">📱 AppSheet에서 수정</a>` : ''}</h3>
-    <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(item['진행단계']||'발굴')}</div>
+    <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}${editUrl ? `<a href="${editUrl}" target="_blank" rel="noopener" class="pl-edit-link" onclick="event.stopPropagation()" title="AppSheet 화면 상단의 휴지통 아이콘으로 삭제도 가능합니다">📱 AppSheet에서 수정·삭제</a>` : ''}</h3>
+    <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(plStageLabel(type, item['진행단계']))}</div>
     ${item['비고'] ? `<div class="pl-d-note">📝 ${esc(item['비고'])}</div>` : ''}
     <div class="pl-loghist">${logs.length ? logs.map(l=>`
       <div class="pl-lh-item"><div class="pl-lh-date">${esc(l['날짜']||'날짜 미상')}</div><div class="pl-lh-txt">${esc(l['내용']||'')}</div></div>
