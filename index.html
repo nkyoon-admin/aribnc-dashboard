@@ -582,6 +582,37 @@ const OAUTH_CLIENT_ID = '708897562205-vim7t5v7jdcs2apsc30blrs2gnmhoua8.apps.goog
    이메일 도메인 검사 코드가 필요 없다. */
 const SPREADSHEET_ID = '1dBcJ9fRuCsIaxRUI6ildhtzfnE_ZTA9vYwsBvLRZKD4';
 const SHEET_RANGES = ['Projects','Tasks','Changes','모집실적','영업리드_마스터','영업일지_로그','원료리드_마스터'];
+/* ── 다른 스프레드시트로 분리된 프로젝트(예: 접근 제한 앱) 추가 지원 ──
+   각 항목의 Projects/Tasks 시트는 메인 시트와 동일한 헤더 구조를 따라야 한다.
+   여기에 항목을 추가하면 해당 스프레드시트의 Projects/Tasks 행이 메인 데이터에
+   합쳐져서, 간트차트/프로젝트 목록에서 동일하게 동작한다. */
+const EXTRA_SOURCES = [
+  { key: 'ale', label: '유산균개발(ALE)', spreadsheetId: '1Ilnyb-LdepXm8Wj3brN6TgpaXKOHhYqM66OHLDEgzNU' }
+];
+/* ── scope 파라미터(?scope=ale) ──
+   특정 소스만 단독으로 보여주고 싶을 때 사용. 예: 사내 포럼의 '유산균개발프로젝트'
+   버튼은 index.html?scope=ale 로 연결해, 메인 프로젝트는 아예 불러오지 않고
+   해당 소스(EXTRA_SOURCES 중 key가 일치하는 것)만 단독으로 보여준다. 접근 권한이
+   있는 사람이 index.html(파라미터 없음)로 들어오면 기존처럼 메인+부속 시트가
+   모두 합쳐져 보인다. */
+let SCOPE = null;
+async function loadExtraSources_(){
+  for(const src of EXTRA_SOURCES){
+    try{
+      const rangesQS = ['Projects','Tasks'].map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${src.spreadsheetId}/values:batchGet?${rangesQS}`;
+      const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + ID_TOKEN } });
+      const json = await res.json();
+      if(!res.ok || json.error){ console.warn('[EXTRA_SOURCES] 불러오기 실패:', src.label, json.error); continue; }
+      const vr = json.valueRanges || [];
+      const extraProjects = rowsToObjects_((vr[0]||{}).values);
+      const extraTasks = rowsToObjects_((vr[1]||{}).values);
+      const existingProjectIds = new Set(RAW.projects.map(p => p['ID']));
+      extraProjects.forEach(p => { if(!existingProjectIds.has(p['ID'])) RAW.projects.push(p); });
+      RAW.tasks = RAW.tasks.concat(extraTasks);
+    }catch(e){ console.warn('[EXTRA_SOURCES] 오류:', src.label, e); }
+  }
+}
 let ID_TOKEN = null;
 let SILENT_ATTEMPT = false;
 let LOADDATA_RETRY_DONE = false;
@@ -882,8 +913,12 @@ async function loadData(){
   st.classList.remove('err');
   try{
     if(!ID_TOKEN){ st.textContent = '로그인이 필요합니다'; return; }
-    const rangesQS = SHEET_RANGES.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:batchGet?${rangesQS}`;
+    // scope=ale 등 단독 소스 모드일 땐 그 소스만, 아니면 메인 시트 전체 범위를 불러온다.
+    const scopedSource = SCOPE ? EXTRA_SOURCES.find(s => s.key === SCOPE) : null;
+    const activeSpreadsheetId = scopedSource ? scopedSource.spreadsheetId : SPREADSHEET_ID;
+    const activeRanges = scopedSource ? ['Projects','Tasks'] : SHEET_RANGES;
+    const rangesQS = activeRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${activeSpreadsheetId}/values:batchGet?${rangesQS}`;
     const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + ID_TOKEN } });
     const json = await res.json();
     if(!res.ok || json.error){
@@ -914,7 +949,7 @@ async function loadData(){
     LOADDATA_RETRY_DONE = false;
     const vr = json.valueRanges || [];
     const byRange = {};
-    SHEET_RANGES.forEach((name,i) => { byRange[name] = rowsToObjects_((vr[i]||{}).values); });
+    activeRanges.forEach((name,i) => { byRange[name] = rowsToObjects_((vr[i]||{}).values); });
 
     RAW.projects = byRange['Projects'] || [];
     RAW.tasks = byRange['Tasks'] || [];
@@ -924,6 +959,7 @@ async function loadData(){
     RAW.pipelineLeadLog = byRange['영업일지_로그'] || [];
     RAW.pipelineMaterials = byRange['원료리드_마스터'] || [];
     RAW.pipelineMaterialLog = [];
+    if(!scopedSource) await loadExtraSources_();
     renderFilterPills();
     renderPlist();
     updateHeaderStats();
@@ -2293,8 +2329,10 @@ function gToday(){
     const params = new URLSearchParams(location.search);
     const p = params.get('p') || params.get('id') || params.get('project');
     const view = params.get('view');
+    const scope = params.get('scope');
     if(p) selId = p;
     if(view && ['task','gantt','story','enroll'].includes(view)) curView = view;
+    if(scope) SCOPE = scope;
   }catch(e){}
 })();
 
