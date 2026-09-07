@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>아리비앤씨 프로젝트 관리 (베타)</title>
+<title>아리비앤씨 프로젝트 관리</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -356,7 +355,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .zoomable:hover{box-shadow:0 0 0 2px var(--primary-lt),var(--sh);border-color:var(--primary)}
 .zoom-modal{display:none;position:fixed;inset:0;background:rgba(15,18,24,.6);z-index:9999;align-items:center;justify-content:center;padding:32px}
 .zoom-modal.show{display:flex}
-.zoom-modal-inner{background:var(--card);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.4);width:min(1320px,97vw);max-height:94vh;overflow:auto;padding:36px 40px;position:relative}
+.zoom-modal-inner{background:var(--card);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,.4);max-width:min(1320px,97vw);max-height:94vh;overflow:auto;padding:36px 40px;position:relative}
 .zoom-modal-close{position:absolute;top:14px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:var(--primary-lt);color:var(--text);font-size:18px;cursor:pointer;line-height:1;z-index:1}
 .zoom-modal-close:hover{background:var(--border)}
 .zoom-modal-body h4{font-size:21px;margin-bottom:6px}
@@ -406,19 +405,12 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 }
 
 /* ── 영업파이프라인 (전사 공통 화면, 프로젝트 비종속) ── */
-.pl-wrap{padding:16px 24px 40px;display:flex;flex-direction:column;gap:16px}
-.pl-tabs{display:flex;gap:8px;border-bottom:1px solid var(--border)}
-.pl-tab{padding:10px 18px;font-size:13.5px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
-.pl-tab:hover{color:var(--text)}
-.pl-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
-.pl-body{display:flex;gap:20px;align-items:flex-start}
+.pl-wrap{padding:16px 24px 40px;display:flex;gap:20px;align-items:flex-start}
 .pl-main{flex:1;min-width:0}
 .pl-note{background:var(--primary-lt);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5}
 .pl-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .pl-chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;box-shadow:var(--sh)}
 .pl-chip.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-.pl-add-chip{display:inline-flex;align-items:center;text-decoration:none;background:var(--primary);color:#fff!important;border-color:var(--primary)}
-.pl-add-chip:hover{opacity:.88}
 .pl-sum{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
 .pl-sum-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:var(--sh)}
 .pl-sum-card .n{font-size:20px;font-weight:800}
@@ -430,11 +422,9 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-col-head i{width:8px;height:8px;border-radius:50%;background:var(--stagecolor)}
 .pl-col-head b{font-size:13px;font-weight:800}
 .pl-col-head span{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700;background:var(--primary-lt);padding:1px 7px;border-radius:10px}
-.pl-card{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 10px;margin-bottom:8px;cursor:pointer;transition:transform .1s}
+.pl-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 10px;margin-bottom:8px;cursor:pointer;transition:transform .1s}
 .pl-card:hover{transform:translateY(-1px);box-shadow:var(--sh)}
 .pl-card:last-child{margin-bottom:0}
-.pl-card-edit{position:absolute;top:7px;right:8px;font-size:12px;text-decoration:none;opacity:.55;line-height:1;padding:2px;border-radius:6px}
-.pl-card-edit:hover{opacity:1;background:var(--primary-lt)}
 .pl-card .pl-tag{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:8px;margin-bottom:5px}
 .pl-card .pl-tag.lead{background:var(--prog-bg);color:var(--prog)}
 .pl-card .pl-tag.mat{background:var(--plan-bg);color:var(--plan-c)}
@@ -444,45 +434,18 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-card .pl-dbadge{font-weight:800;padding:1px 6px;border-radius:8px;background:var(--hold-bg);color:var(--hold)}
 .pl-card .pl-dbadge.ok{background:var(--done-bg);color:var(--done)}
 .pl-card .pl-lastlog{margin-top:6px;padding-top:6px;border-top:1px dashed var(--border2);font-size:10.5px;color:var(--text);line-height:1.5;opacity:.85}
-.pl-mat-explorer{display:flex;gap:16px;align-items:flex-start}
-.pl-mat-list{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:6px}
-.pl-mat-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 12px;cursor:pointer;box-shadow:var(--sh)}
-.pl-mat-item:hover{border-color:var(--primary)}
-.pl-mat-item.on{border-color:var(--primary);background:var(--primary-lt)}
-.pl-mat-item-name{font-size:13px;font-weight:800;color:var(--text)}
-.pl-mat-item-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.pl-mat-stale{color:var(--hold);font-weight:700}
-.pl-mat-detail{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
-.pl-mat-detail-title{font-size:16px;font-weight:800;color:var(--text)}
-.pl-mat-stage-group{display:flex;flex-direction:column;gap:8px}
-.pl-mat-stage-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;padding-bottom:7px;border-bottom:2px solid var(--stagecolor)}
-.pl-mat-stage-head i{width:8px;height:8px;border-radius:50%;background:var(--stagecolor)}
-.pl-mat-stage-head span{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700;background:var(--primary-lt);padding:1px 7px;border-radius:10px}
-.pl-mat-supplier{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:var(--sh)}
-.pl-mat-supplier-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pl-mat-supplier-head b{font-size:13px;color:var(--text)}
-.pl-updrow-mini{margin-left:auto;font-size:10.5px;color:var(--muted)}
-.pl-mat-edit-link{font-size:11px;font-weight:700;color:var(--primary);text-decoration:none;background:var(--primary-lt);padding:2px 8px;border-radius:12px;white-space:nowrap;flex-shrink:0}
-.pl-mat-edit-link:hover{background:var(--primary);color:#fff}
-.pl-mat-history{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border2);display:flex;flex-direction:column;gap:6px}
-.pl-mh-item{font-size:11.5px;color:var(--text);line-height:1.5}
-.pl-mh-date{font-weight:800;color:var(--muted);margin-right:6px}
-.pl-mh-empty{font-size:11px;color:var(--muted)}
 .pl-empty-col{color:var(--muted);font-size:11.5px;text-align:center;padding:14px 4px}
 .pl-detail-panel{display:none;flex:0 0 480px;width:480px;max-width:48vw;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-y:auto;padding:28px;box-shadow:var(--sh);position:sticky;top:16px;max-height:calc(100vh - 120px)}
 .pl-detail-panel.open{display:block}
-.pl-detail-panel h3{font-size:21px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pl-detail-panel .pl-edit-link{font-size:11px;font-weight:700;color:var(--primary);text-decoration:none;background:var(--primary-lt);padding:3px 10px;border-radius:20px}
-.pl-detail-panel .pl-edit-link:hover{background:var(--primary);color:#fff}
+.pl-detail-panel h3{font-size:21px;font-weight:800;margin-bottom:6px}
 .pl-detail-panel .pl-d-sub{font-size:14.5px;color:var(--muted);margin-bottom:18px}
-.pl-detail-panel .pl-d-note{font-size:13px;background:var(--primary-lt);border-radius:8px;padding:9px 12px;margin:-8px 0 18px;white-space:pre-wrap;line-height:1.5}
 .pl-detail-panel .pl-d-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
 .pl-loghist{border-left:2px solid var(--border);padding-left:18px;margin-left:4px}
 .pl-loghist .pl-lh-item{position:relative;margin-bottom:20px}
 .pl-loghist .pl-lh-item::before{content:'';position:absolute;left:-22px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--primary)}
 .pl-loghist .pl-lh-date{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:4px}
 .pl-loghist .pl-lh-txt{font-size:15px;color:var(--text);line-height:1.7}
-@media (max-width: 1100px){.pl-board{grid-template-columns:repeat(2,1fr)}.pl-sum{grid-template-columns:repeat(2,1fr)}.pl-body{flex-direction:column}.pl-detail-panel{width:100%;max-width:100%;flex-basis:auto;position:static}.pl-mat-explorer{flex-direction:column}.pl-mat-list{width:100%;flex-direction:row;flex-wrap:wrap}.pl-mat-item{flex:1 1 160px}}
+@media (max-width: 1100px){.pl-board{grid-template-columns:repeat(2,1fr)}.pl-sum{grid-template-columns:repeat(2,1fr)}.pl-wrap{flex-direction:column}.pl-detail-panel{width:100%;max-width:100%;flex-basis:auto;position:static}}
 
 @media (max-width: 900px){
   .main{flex-direction:column}
@@ -493,16 +456,6 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 </style>
 </head>
 <body>
-
-<div id="loginGate" style="position:fixed;inset:0;z-index:9999;background:var(--bg,#f6f4ee);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px">
-  <div style="font-size:15px;font-weight:700;color:var(--text,#211d15)">📊 아리비앤씨 프로젝트 관리</div>
-  <div style="font-size:13px;color:var(--muted,#75705f);max-width:320px">아리비앤씨 계정으로 로그인해야 데이터를 볼 수 있습니다</div>
-  <button id="googleLoginBtn" onclick="startGoogleLogin()" style="display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:6px;border:1px solid #dadce0;background:#fff;color:#3c4043;font-size:14px;font-weight:600;cursor:pointer">
-    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l6-6C33.9 6.5 29.2 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c2.8 0 5.3 1 7.3 2.7l6-6C33.9 6.5 29.2 4.5 24 4.5c-7.7 0-14.4 4.4-17.7 10.2z"/><path fill="#4CAF50" d="M24 43.5c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 34.7 26.7 35.5 24 35.5c-5.3 0-9.7-3.6-11.3-8.4l-6.5 5C9.5 39 16.2 43.5 24 43.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2C40.8 36.4 43.5 30.8 43.5 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
-    Google 계정으로 로그인
-  </button>
-  <div id="loginError" style="display:none;font-size:12px;color:#b0413e;max-width:320px"></div>
-</div>
 
 <div class="hdr">
   <div>
@@ -534,8 +487,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 <div class="nav">
   <input type="text" id="srch" placeholder="🔍 프로젝트명, 의뢰사, 기능성, PI 검색..." oninput="onSearch(this.value)">
   <div id="filter-pills"></div>
-  <button class="nav-pl-btn" id="pl-nav-btn" onclick="togglePipeline()" style="margin-left:auto">💼 영업·원료 파이프라인</button>
-  <a class="nav-pl-btn" id="ale-add-btn" href="https://www.appsheet.com/start/a9d6771d-e2cb-4d40-8bf6-608dc6b61a5b" target="_blank" rel="noopener" title="유산균개발 프로젝트(ALE) 앱 열기" style="display:inline-block;text-decoration:none;text-align:center">➕ 유산균개발 ALE</a>
+  <button class="nav-pl-btn" id="pl-nav-btn" onclick="togglePipeline()" style="margin-left:auto">💼 연구영업 파이프라인</button>
 </div>
 
 <div class="main" id="mainArea">
@@ -548,14 +500,8 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 </div>
 
 <div class="pl-wrap" id="plWrap" style="display:none">
-  <div class="pl-tabs" id="plTabs">
-    <div class="pl-tab" id="pl-tab-lead" onclick="plSetTab('lead')">🧪 연구영업 파이프라인</div>
-    <div class="pl-tab" id="pl-tab-mat" onclick="plSetTab('mat')">🧫 원료영업 파이프라인</div>
-  </div>
-  <div class="pl-body">
-    <div class="pl-main" id="plMain"></div>
-    <div class="pl-detail-panel" id="plDetailPanel"></div>
-  </div>
+  <div class="pl-main" id="plMain"></div>
+  <div class="pl-detail-panel" id="plDetailPanel"></div>
 </div>
 
 <div class="zoom-modal" id="zoomModal" onclick="if(event.target===this) closeZoomModal()">
@@ -570,214 +516,38 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 // 이전(실제로는 배포되지 않았던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_OLD = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
-/* ── 구글 로그인(도메인 검증) ──
-   대시보드 API(Apps Script)는 이제 구글 로그인 토큰을 요구한다.
-   여기서 로그인 버튼을 렌더링하고, 로그인 성공 시 받은 ID 토큰을
-   같은 날 안에는(localStorage) 기억해두었다가 API 호출마다 함께 보낸다. */
-const OAUTH_CLIENT_ID = '708897562205-vim7t5v7jdcs2apsc30blrs2gnmhoua8.apps.googleusercontent.com';
-/* ── 베타: 구글 시트 API 직접 호출 ──
-   Apps Script 백엔드를 거치지 않고, 로그인한 사용자 본인의 구글 계정 권한으로
-   구글 시트 API를 브라우저에서 직접 호출한다. 이 시트를 보고 있는 사용자만
-   데이터를 볼 수 있으므로(구글 시트 자체의 공유 권한이 곧 접근 통제), 별도의
-   이메일 도메인 검사 코드가 필요 없다. */
-const SPREADSHEET_ID = '1dBcJ9fRuCsIaxRUI6ildhtzfnE_ZTA9vYwsBvLRZKD4';
-const SHEET_RANGES = ['Projects','Tasks','Changes','모집실적','영업리드_마스터','영업일지_로그','원료리드_마스터'];
-/* ── 다른 스프레드시트로 분리된 프로젝트(예: 접근 제한 앱) 추가 지원 ──
-   각 항목의 Projects/Tasks 시트는 메인 시트와 동일한 헤더 구조를 따라야 한다.
-   여기에 항목을 추가하면 해당 스프레드시트의 Projects/Tasks 행이 메인 데이터에
-   합쳐져서, 간트차트/프로젝트 목록에서 동일하게 동작한다. */
-const EXTRA_SOURCES = [
-  { key: 'ale', label: '유산균개발(ALE)', spreadsheetId: '1Ilnyb-LdepXm8Wj3brN6TgpaXKOHhYqM66OHLDEgzNU' }
-];
-/* ── scope 파라미터(?scope=ale) ──
-   특정 소스만 단독으로 보여주고 싶을 때 사용. 예: 사내 포럼의 '유산균개발프로젝트'
-   버튼은 index.html?scope=ale 로 연결해, 메인 프로젝트는 아예 불러오지 않고
-   해당 소스(EXTRA_SOURCES 중 key가 일치하는 것)만 단독으로 보여준다. 접근 권한이
-   있는 사람이 index.html(파라미터 없음)로 들어오면 기존처럼 메인+부속 시트가
-   모두 합쳐져 보인다. */
-let SCOPE = null;
-async function loadExtraSources_(){
-  for(const src of EXTRA_SOURCES){
-    try{
-      const rangesQS = ['Projects','Tasks'].map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${src.spreadsheetId}/values:batchGet?${rangesQS}`;
-      const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + ID_TOKEN } });
-      const json = await res.json();
-      if(!res.ok || json.error){ console.warn('[EXTRA_SOURCES] 불러오기 실패:', src.label, json.error); continue; }
-      const vr = json.valueRanges || [];
-      const extraProjects = rowsToObjects_((vr[0]||{}).values);
-      const extraTasks = rowsToObjects_((vr[1]||{}).values);
-      const existingProjectIds = new Set(RAW.projects.map(p => p['ID']));
-      extraProjects.forEach(p => { if(!existingProjectIds.has(p['ID'])) RAW.projects.push(p); });
-      RAW.tasks = RAW.tasks.concat(extraTasks);
-    }catch(e){ console.warn('[EXTRA_SOURCES] 오류:', src.label, e); }
-  }
-}
-let ID_TOKEN = null;
-let SILENT_ATTEMPT = false;
-let LOADDATA_RETRY_DONE = false;
-/* ── 로그인 유지(같은 기기·브라우저, 같은 날짜 한정) ──
-   localStorage에 토큰·만료 시각·로그인한 날짜(YYYY-MM-DD, 로컬 기준)를
-   저장해, 같은 날 안에는 탭/브라우저를 껐다 켜도 로그인 화면이 다시
-   뜨지 않게 한다. 구글 액세스 토큰 자체는 발급 후 1시간이면 만료되므로,
-   같은 날 안에서 만료됐다면 화면에 아무 것도 보여주지 않고 조용히
-   (trySilentLogin_) 재발급을 시도한다. 반면 저장된 날짜가 오늘과 다르면
-   (보통 다음날 컴퓨터를 다시 켤 때) 정보를 모두 지우고 로그인 화면을
-   다시 보여준다 — 매일 최소 한 번은 다시 로그인하게 하기 위함. */
-function todayStr_(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-function storeToken_(token, expiresInSec){
-  ID_TOKEN = token;
-  try{
-    localStorage.setItem('aribnc_id_token_beta', token);
-    localStorage.setItem('aribnc_id_token_beta_exp', String(Date.now() + (expiresInSec || 3600) * 1000));
-    localStorage.setItem('aribnc_id_token_beta_date', todayStr_());
-  }catch(e){}
-}
-function clearToken_(){
-  ID_TOKEN = null;
-  try{
-    localStorage.removeItem('aribnc_id_token_beta');
-    localStorage.removeItem('aribnc_id_token_beta_exp');
-    localStorage.removeItem('aribnc_id_token_beta_date');
-  }catch(e){}
-}
-// 같은 날 안에서 액세스 토큰(1시간)만 만료된 경우엔, 화면 로드 시
-// 조용히 재로그인을 자동으로 시도해도 된다는 신호로 쓰인다. 날짜 자체가
-// 바뀐 경우(다음날)엔 false로 남아 있어 로그인 화면을 그대로 보여준다.
-let AUTO_SILENT_OK = false;
-try{
-  const storedDate = localStorage.getItem('aribnc_id_token_beta_date');
-  const storedExp = parseInt(localStorage.getItem('aribnc_id_token_beta_exp') || '0', 10);
-  if(storedDate === todayStr_()){
-    if(storedExp && Date.now() < storedExp){
-      ID_TOKEN = localStorage.getItem('aribnc_id_token_beta');
-    } else {
-      AUTO_SILENT_OK = true;
-    }
-  } else {
-    localStorage.removeItem('aribnc_id_token_beta');
-    localStorage.removeItem('aribnc_id_token_beta_exp');
-    localStorage.removeItem('aribnc_id_token_beta_date');
-  }
-}catch(e){}
-/* ── 리디렉션 방식 OAuth 콜백 처리 ──
-   Apps Script 웹앱은 실제로는 script.googleusercontent.com 이라는 동적 서브도메인
-   iframe 안에서 실행되어 "승인된 JavaScript 원본"(팝업 방식)을 등록할 수 없다.
-   대신 ux_mode:'redirect' + 고정된 redirect_uri(이 배포 URL 자체)를 사용하면,
-   Google이 인증 후 이 페이지로 다시 리디렉션하면서 URL 해시(#access_token=...)에
-   토큰을 실어 보내준다. 페이지 로드 시 이를 파싱해 세션에 저장한다. */
-let OAUTH_REDIRECT_ERROR = null;
-(function parseOAuthRedirectHash_(){
-  try{
-    if(!location.hash || location.hash.indexOf('access_token=') === -1 && location.hash.indexOf('error=') === -1) return;
-    const params = new URLSearchParams(location.hash.replace(/^#/, ''));
-    const tok = params.get('access_token');
-    const err = params.get('error');
-    if(tok){
-      const expiresIn = parseInt(params.get('expires_in') || '3600', 10);
-      storeToken_(tok, expiresIn);
-    } else if(err){
-      OAUTH_REDIRECT_ERROR = err;
-    }
-    // 토큰이 주소창에 남아있지 않도록 정리
-    history.replaceState(null, '', location.pathname + location.search);
-  }catch(e){}
-})();
-
-function showLoginGate(){
-  const g = document.getElementById('loginGate');
-  if(g) g.style.display = 'flex';
-}
-function hideLoginGate(){
-  const g = document.getElementById('loginGate');
-  if(g) g.style.display = 'none';
-}
-let GOOGLE_TOKEN_CLIENT = null;
-function ensureTokenClient_(){
-  if(GOOGLE_TOKEN_CLIENT) return GOOGLE_TOKEN_CLIENT;
-  GOOGLE_TOKEN_CLIENT = google.accounts.oauth2.initTokenClient({
-    client_id: OAUTH_CLIENT_ID,
-    scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets.readonly',
-    callback: (resp)=>{
-      const wasSilent = SILENT_ATTEMPT;
-      SILENT_ATTEMPT = false;
-      const le = document.getElementById('loginError');
-      if(resp && resp.error){
-        // 조용히(자동) 시도한 재로그인이 실패한 경우엔 무서운 에러 문구 없이
-        // 그냥 로그인 화면만 보여준다. 사용자가 직접 버튼을 눌러 실패한
-        // 경우에만 실패 사유를 보여준다.
-        if(!wasSilent && le){ le.style.display='block'; le.textContent = '로그인 실패: ' + resp.error; }
-        showLoginGate();
-        return;
-      }
-      if(resp && resp.access_token){
-        storeToken_(resp.access_token, resp.expires_in);
-        if(le) le.style.display = 'none';
-        hideLoginGate();
-        loadData();
-      }
-    }
-  });
-  return GOOGLE_TOKEN_CLIENT;
-}
-function startGoogleLogin(){
-  function ready(){
-    if(!window.google || !google.accounts || !google.accounts.oauth2){ setTimeout(ready, 200); return; }
-    SILENT_ATTEMPT = false;
-    ensureTokenClient_().requestAccessToken({ prompt: 'select_account' });
-  }
-  ready();
-}
-function trySilentLogin_(){
-  // 같은 날 안에서 토큰이 만료됐을 때, 로그인 화면을 보여주지 않고
-  // 조용히 재발급을 시도한다. 구글 로그인 세션이 살아있으면 화면
-  // 변화 없이 자동으로 이어지고, 실패하면 그제서야 로그인 화면을 보여준다.
-  function ready(){
-    if(!window.google || !google.accounts || !google.accounts.oauth2){ setTimeout(ready, 200); return; }
-    SILENT_ATTEMPT = true;
-    ensureTokenClient_().requestAccessToken({ prompt: '' });
-  }
-  ready();
-}
-
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
+/* ALE 프로젝트(ALE_로 시작하는 프로젝트ID)는 메인 앱의 Projects/Tasks가 아니라
+   별도의 "유산균개발_프로젝트관리_ALE" 앱에서 직접 관리된다.
+   메인 앱의 ALE_Projects/ALE_Tasks 테이블은 IMPORTRANGE로 ALE 시트를 그대로 읽어오기만 하는
+   조회 전용(Read-Only) 미러 테이블이라 Key를 올바르게 맞춰도 딥링크(row=)로 행을 선택하지 못하고
+   "No items selected"가 뜨며,애초에 Read-Only 테이블이라 수정(Edit) 자체가 불가능하다.
+   따라서 ALE 프로젝트/업무를 "수정"하려면 반드시 ALE 전용 앱으로 열어야 한다. */
+const ALE_APPSHEET_URL = 'https://www.appsheet.com/start/a9d6771d-e2cb-4d40-8bf6-608dc6b61a5b';
+function isAleId(id){ return typeof id === 'string' && id.toUpperCase().startsWith('ALE_'); }
 /* AppSheet에서 Tasks 테이블 행 하나를 바로 여는 딥링크용 View 이름.
    AppSheet 편집기 → UX → Views 에서 Tasks 테이블의 Detail(또는 Form) view 이름을 확인해서
    다르면 아래 값만 바꿔주면 됨 (기본값: 자동 생성되는 이름 그대로 사용) */
-const TASKS_DETAIL_VIEW = 'tasks_Detail';
-function appsheetTaskUrl(taskId){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(TASKS_DETAIL_VIEW)}&row=${encodeURIComponent(taskId)}`;
+const TASKS_DETAIL_VIEW = 'Tasks_Detail';
+function appsheetTaskUrl(taskId, pid){
+  /* 업무 자체의 ID(taskId)에는 ALE 여부가 드러나지 않으므로, 이 업무가 속한 프로젝트ID(pid) —
+     보통 현재 열려 있는 프로젝트인 selId — 로 ALE 여부를 판단한다.
+     ALE 업무는 메인 앱이 아니라 ALE 전용 앱의 Tasks_Detail 뷰로 열어야 실제로 수정할 수 있다. */
+  const baseUrl = isAleId(pid) ? ALE_APPSHEET_URL : APPSHEET_URL;
+  return `${baseUrl}#view=${encodeURIComponent(TASKS_DETAIL_VIEW)}&row=${encodeURIComponent(taskId)}`;
 }
 /* AppSheet에서 Projects 테이블의 특정 프로젝트 행을 바로 여는 딥링크 (프로젝트 메모의 "AppSheet에서 수정" 버튼용) */
 const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
 function appsheetProjectUrl(pid){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
+  /* ALE 프로젝트는 ALE 전용 앱의 Projects_Detail 뷰로 열어야 실제로 수정(Edit)할 수 있다. */
+  const baseUrl = isAleId(pid) ? ALE_APPSHEET_URL : APPSHEET_URL;
+  return `${baseUrl}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
 }
-/* AppSheet에서 "영업리드_마스터" 테이블의 특정 리드 행을 바로 여는 딥링크 (연구영업 파이프라인 카드의 "AppSheet에서 수정" 버튼용) */
-const LEAD_DETAIL_VIEW = '영업리드_마스터_Detail';
-function appsheetLeadUrl(id){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(LEAD_DETAIL_VIEW)}&row=${encodeURIComponent(id)}`;
-}
-/* AppSheet에서 "원료리드_마스터" 테이블의 특정 원료 행을 바로 여는 딥링크 (원료영업 파이프라인 카드의 "AppSheet에서 수정" 버튼용) */
-const MATERIAL_DETAIL_VIEW = '원료리드_마스터_Detail';
-function appsheetMaterialUrl(id){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(MATERIAL_DETAIL_VIEW)}&row=${encodeURIComponent(id)}`;
-}
-/* 새 리드/원료(업체)를 추가할 때 쓰는 AppSheet Form view 딥링크.
-   row 파라미터 없이 Form view로 이동하면 AppSheet가 새 행 추가 화면으로 연다.
-   (AppSheet에서 테이블 추가 시 자동 생성되는 "<테이블명>_Form" view 이름을 그대로 사용) */
-const LEAD_FORM_VIEW = '영업리드_마스터_Form';
-function appsheetLeadAddUrl(){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(LEAD_FORM_VIEW)}`;
-}
-const MATERIAL_FORM_VIEW = '원료리드_마스터_Form';
-function appsheetMaterialAddUrl(){
-  return `${APPSHEET_URL}#view=${encodeURIComponent(MATERIAL_FORM_VIEW)}`;
-}
-function openTaskInAppSheet(taskId, e){
+function openTaskInAppSheet(taskId, e, pid){
   if(e) e.stopPropagation();
   if(!taskId) return;
-  const url = appsheetTaskUrl(taskId);
+  /* 호출부에서 pid를 안 넘겨준 경우(기존 코드 호환) 현재 열려 있는 프로젝트(selId)로 대체 */
+  const url = appsheetTaskUrl(taskId, pid || selId);
   /* 항상 새 탭으로만 연다 — 현재 탭(대시보드)은 그대로 유지 */
   window.open(url, '_blank', 'noopener');
 }
@@ -893,80 +663,31 @@ function zoomMemoBox(ev){
   openZoomModal(`<h4 style="margin-bottom:14px">📋 프로젝트 메모</h4>${cur.innerHTML}`);
 }
 
-/* ── DATA LOAD (베타: 구글 시트 API 직접 호출) ── */
-function rowsToObjects_(values){
-  /* Apps Script의 sheetToJSON()과 동일한 규칙: 첫 행을 헤더로 삼아 {헤더: 값} 객체 배열로 변환 */
-  if(!values || values.length < 1) return [];
-  const headers = values[0];
-  return values.slice(1)
-    .filter(row => row.some(cell => cell !== '' && cell !== undefined && cell !== null))
-    .map(row => {
-      const obj = {};
-      headers.forEach((h,i) => { obj[h] = row[i] !== undefined ? row[i] : ''; });
-      return obj;
-    });
-}
-
+/* ── DATA LOAD ── */
 async function loadData(){
   const st = document.getElementById('status');
   st.textContent = '불러오는 중...';
   st.classList.remove('err');
   try{
-    if(!ID_TOKEN){ st.textContent = '로그인이 필요합니다'; return; }
-    // scope=ale 등 단독 소스 모드일 땐 그 소스만, 아니면 메인 시트 전체 범위를 불러온다.
-    const scopedSource = SCOPE ? EXTRA_SOURCES.find(s => s.key === SCOPE) : null;
-    const activeSpreadsheetId = scopedSource ? scopedSource.spreadsheetId : SPREADSHEET_ID;
-    const activeRanges = scopedSource ? ['Projects','Tasks'] : SHEET_RANGES;
-    const rangesQS = activeRanges.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${activeSpreadsheetId}/values:batchGet?${rangesQS}`;
-    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + ID_TOKEN } });
+    const res = await fetch(GANTT_API_URL);
     const json = await res.json();
-    if(!res.ok || json.error){
-      const code = json.error && json.error.code;
-      clearToken_();
-      // 401(토큰 만료/무효)이고 같은 날 안이라면, 화면을 바꾸지 않고
-      // 한 번 조용히 재로그인을 시도한다 — 성공하면 loadData()가 다시 불려
-      // 사용자는 아무것도 눈치채지 못한다. 권한 문제(403)는 재시도해도
-      // 소용없으므로 바로 로그인 화면을 보여준다.
-      if(code === 401 && !LOADDATA_RETRY_DONE){
-        LOADDATA_RETRY_DONE = true;
-        trySilentLogin_();
-        return;
-      }
-      LOADDATA_RETRY_DONE = false;
-      st.textContent = '⚠️ 로그인이 만료되었거나 권한이 없습니다';
-      st.classList.add('err');
-      const le = document.getElementById('loginError');
-      if(le){
-        le.style.display='block';
-        le.textContent = (code === 403)
-          ? '이 구글 계정은 아직 시트에 접근 권한이 없습니다. 관리자에게 시트 공유를 요청하세요.'
-          : '로그인 실패 사유: ' + (json.error ? json.error.message : '알 수 없음');
-      }
-      showLoginGate();
-      return;
-    }
-    LOADDATA_RETRY_DONE = false;
-    const vr = json.valueRanges || [];
-    const byRange = {};
-    activeRanges.forEach((name,i) => { byRange[name] = rowsToObjects_((vr[i]||{}).values); });
-
-    RAW.projects = byRange['Projects'] || [];
-    RAW.tasks = byRange['Tasks'] || [];
-    RAW.changes = byRange['Changes'] || [];
-    RAW.enroll = byRange['모집실적'] || [];
-    RAW.pipelineLeads = byRange['영업리드_마스터'] || [];
-    RAW.pipelineLeadLog = byRange['영업일지_로그'] || [];
-    RAW.pipelineMaterials = byRange['원료리드_마스터'] || [];
-    RAW.pipelineMaterialLog = [];
-    if(!scopedSource) await loadExtraSources_();
+    RAW.projects = json.projects || [];
+    RAW.tasks = json.tasks || [];
+    RAW.changes = json.changes || [];
+    RAW.enroll = json.enroll || []; /* "모집실적" 로그 시트 — 아직 GAS/시트 준비 전이면 항상 빈 배열이라 목업 화면이 그대로 나온다 */
+    /* "영업리드_마스터/영업일지_로그/원료계약_마스터/원료계약_로그" — 아직 GAS에서 안 내려주면 빈 배열,
+       이 경우 buildPipelineView()가 자동으로 예시(목업) 데이터를 대신 보여준다 */
+    RAW.pipelineLeads = json.pipelineLeads || [];
+    RAW.pipelineLeadLog = json.pipelineLeadLog || [];
+    RAW.pipelineMaterials = json.pipelineMaterials || [];
+    RAW.pipelineMaterialLog = json.pipelineMaterialLog || [];
     renderFilterPills();
     renderPlist();
     updateHeaderStats();
     if(selId && RAW.projects.some(p=>p['ID']===selId)) renderDetail(selId);
     else if(selId){ selId=null; showEmptyDetail(); }
     if(pipelineMode) renderPipelineView();
-    st.textContent = `✅ ${new Date().toLocaleTimeString('ko-KR')} 업데이트(베타) · 프로젝트 ${RAW.projects.length}개 · 업무 ${RAW.tasks.length}개`;
+    st.textContent = `✅ ${new Date().toLocaleTimeString('ko-KR')} 업데이트 · 프로젝트 ${RAW.projects.length}개 · 업무 ${RAW.tasks.length}개`;
   }catch(e){
     st.textContent = '⚠️ 데이터를 불러오지 못했습니다';
     st.classList.add('err');
@@ -975,24 +696,17 @@ async function loadData(){
 }
 
 /* ── 영업파이프라인 (전사 공통, 프로젝트 비종속) ──
-   "영업리드_마스터"(연구영업 리드)와 "원료리드_마스터"(원료영업 리드)는 서로 성격이 다른
-   영업 활동이라 하나로 합치지 않고, 탭으로 구분된 두 개의 별도 칸반 보드로 보여준다.
-   (혹시 GAS 연동이 끊겨 RAW.pipelineLeads/pipelineMaterials가 비어있으면
-   방금 정리한 엑셀 내용을 그대로 예시(목업)로 대신 보여준다.) */
+   "영업리드_마스터"/"원료계약_마스터" 시트에 실제 행이 있으면 그걸 쓰고,
+   아직 GAS 연동 전(RAW.pipelineLeads/pipelineMaterials가 비어있음)이면
+   방금 정리한 엑셀 내용을 그대로 예시(목업)로 보여준다. */
 let pipelineMode = false;
-let plTab = 'lead'; /* lead(연구영업) | mat(원료영업) */
-let plFilter = 'all'; /* all | stale */
-let plMatSelected = null; /* 원료영업 탭에서 왼쪽 목록에서 선택된 원료명 */
-/* key = 시트 "진행단계" 컬럼에 실제로 저장된 값(매칭용, 변경 금지).
-   matLabel = 원료영업 탭에서 대신 보여줄 표시용 이름 — 원료 소싱 흐름(샘플/협상/계약)에
-   맞게 이름만 다르게 보여주고, 실제 데이터 매칭은 key 그대로 사용한다.
-   (시트 값 자체를 바꾸려면 원료리드_마스터의 "진행단계" 컬럼을 직접 수정해야 함) */
+let plFilter = 'all'; /* all | lead | mat | stale */
 const PL_STAGES = [
-  {key:'발굴', matLabel:'발굴', color:'var(--hold)'},
-  {key:'협의중', matLabel:'협상중', color:'var(--prog)'},
-  {key:'견적/계약검토', matLabel:'샘플/단가협의', color:'var(--plan-c)'},
-  {key:'계약완료', matLabel:'계약완료', color:'var(--done)'},
-  {key:'보류/중단', matLabel:'보류/중단', color:'var(--muted)'},
+  {key:'발굴', color:'var(--hold)'},
+  {key:'협의중', color:'var(--prog)'},
+  {key:'견적/계약검토', color:'var(--plan-c)'},
+  {key:'계약완료', color:'var(--done)'},
+  {key:'보류/중단', color:'var(--muted)'},
 ];
 const PL_MOCK_LEADS = [
   {ID:'L001', 연구명:'마가목', 파트너사:'신우코오퍼레이션', 진행단계:'계약완료', 최근업데이트일:'2026-07-22'},
@@ -1032,11 +746,6 @@ function plDaysSince(dstr){
   const today = new Date(); today.setHours(0,0,0,0);
   return Math.round((today-d)/86400000);
 }
-function plStageLabel(type, key){
-  const s = PL_STAGES.find(x=>x.key===(key||'발굴'));
-  if(!s) return key||'발굴';
-  return type==='lead' ? s.key : s.matLabel;
-}
 function plLastLog(id, logArr){
   const rows = logArr.filter(r=>String(r['ID'])===String(id) && r['내용']);
   if(!rows.length) return null;
@@ -1052,34 +761,22 @@ function togglePipeline(){
   if(pipelineMode) renderPipelineView();
 }
 function plSetFilter(f){ plFilter = f; renderPipelineView(); }
-function plSetTab(t){ plTab = t; plFilter = 'all'; plMatSelected = null; plCloseDetail(); renderPipelineView(); }
-function plSelectMaterial(i){ plMatSelected = (window._plMatNames||[])[i] || null; renderPipelineView(); }
 function renderPipelineView(){
-  document.getElementById('pl-tab-lead').classList.toggle('on', plTab==='lead');
-  document.getElementById('pl-tab-mat').classList.toggle('on', plTab==='mat');
-
   const wrap = document.getElementById('plMain');
-  const isLead = plTab==='lead';
-  const usingReal = isLead ? RAW.pipelineLeads.length>0 : RAW.pipelineMaterials.length>0;
-  const rawItems = isLead
-    ? (usingReal ? RAW.pipelineLeads : PL_MOCK_LEADS)
-    : (usingReal ? RAW.pipelineMaterials : PL_MOCK_MATERIALS);
-  const log = isLead
-    ? (usingReal ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG)
-    : (usingReal ? RAW.pipelineMaterialLog : PL_MOCK_MATERIAL_LOG);
-  const items = rawItems.map(r=>({...r, _type: isLead?'lead':'mat'}));
+  /* 1단계: 연구영업(리드) 파이프라인만 우선 구축 — 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가 예정 */
+  const usingReal = RAW.pipelineLeads.length>0;
+  const leads = (usingReal ? RAW.pipelineLeads : PL_MOCK_LEADS).map(r=>({...r, _type:'lead'}));
+  const leadLog = usingReal ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG;
+  let items = [...leads];
   const staleCut = 30;
   const withMeta = items.map(it=>{
-    const name = isLead ? it['연구명'] : it['원료명'];
-    const partner = isLead ? it['파트너사'] : it['공급사'];
+    const name = it['연구명'];
+    const partner = it['파트너사'];
     const d = plDaysSince(it['최근업데이트일']);
-    /* "영업일지_로그"/원료 로그에 등록된 날짜별 로그가 있으면 그걸 우선 보여주고,
-       없으면 리드/원료 자체의 "비고" 필드를 최근 메모로 대신 보여준다.
-       (담당자가 로그 시트가 아니라 비고만 수정하는 경우가 많아서, 그것도 카드에 바로 반영되게 함) */
-    const lastLog = plLastLog(it['ID'], log) || it['비고'] || null;
-    return {...it, _name:name, _partner:partner, _days:d, _log:lastLog};
+    const log = plLastLog(it['ID'], leadLog);
+    return {...it, _name:name, _partner:partner, _days:d, _log:log};
   });
-  const nTotal = withMeta.length;
+  const nLead = leads.length;
   const nStale = withMeta.filter(x=>x._days!==null && x._days>=staleCut).length;
   let filtered = withMeta;
   if(plFilter==='stale') filtered = withMeta.filter(x=>x._days!==null && x._days>=staleCut);
@@ -1088,110 +785,36 @@ function renderPipelineView(){
   PL_STAGES.forEach(s=>stageCounts[s.key]=0);
   filtered.forEach(x=>{ const st = x['진행단계']||'발굴'; if(stageCounts[st]===undefined) stageCounts[st]=0; stageCounts[st]++; });
 
-  const label = isLead ? '"영업리드_마스터"(연구영업)' : '"원료리드_마스터"(원료영업)';
-  const matAddHint = !isLead ? ' 새 업체를 같은 원료 밑에 묶으려면, 원료명을 기존 원료와 정확히 똑같이 입력해주세요.' : '';
-  const editDeleteHint = ' 각 항목의 "✏️ 수정" 버튼을 누르면 AppSheet 화면이 열리고, 그 화면 상단의 휴지통 아이콘으로 삭제도 할 수 있습니다.';
   const noteHtml = usingReal
-    ? `<div class="pl-note">📋 ${label} 시트에 입력된 실제 데이터를 보여줍니다.${matAddHint}${editDeleteHint}</div>`
-    : `<div class="pl-note">📌 ${isLead?'연구':'원료'}영업 파이프라인 예시 화면입니다 — Google Sheets/GAS 연동 전이라 방금 정리한 엑셀 내용을 그대로 보여드립니다. 연동되면 실제 데이터로 자동 전환됩니다.${matAddHint}</div>`;
+    ? `<div class="pl-note">📋 "영업리드_마스터" 시트에 입력된 실제 데이터를 보여줍니다. (원료계약 파이프라인은 다음 단계에서 별도로 추가될 예정입니다)</div>`
+    : `<div class="pl-note">📌 1단계: 연구영업(리드) 파이프라인 예시 화면입니다 — Google Sheets/GAS 연동 전이라 방금 정리한 엑셀 내용을 그대로 보여드립니다. 연동되면 실제 데이터로 자동 전환됩니다. 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가할 예정입니다.</div>`;
 
-  const addUrl = isLead ? appsheetLeadAddUrl() : appsheetMaterialAddUrl();
-  const addLabel = isLead ? '+ 새 리드 추가' : '+ 새 원료·업체 추가';
   const chips = `<div class="pl-chips">
-    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nTotal}</div>
+    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nLead}</div>
     <div class="pl-chip ${plFilter==='stale'?'on':''}" onclick="plSetFilter('stale')">⚠️ 30일 이상 업데이트 없음 ${nStale}</div>
-    <a class="pl-chip pl-add-chip" href="${addUrl}" target="_blank" rel="noopener" style="margin-left:auto">${addLabel}</a>
   </div>`;
 
+  const sumHtml = `<div class="pl-sum">${PL_STAGES.map(s=>`
+    <div class="pl-sum-card"><div class="l"><i style="background:${s.color}"></i>${esc(s.key)}</div><div class="n">${stageCounts[s.key]||0}</div></div>
+  `).join('')}</div>`;
+
+  const boardHtml = `<div class="pl-board">${PL_STAGES.map(s=>{
+    const rows = filtered.filter(x=>(x['진행단계']||'발굴')===s.key);
+    return `<div class="pl-col">
+      <div class="pl-col-head" style="--stagecolor:${s.color}"><i></i><b>${esc(s.key)}</b><span>${rows.length}건</span></div>
+      ${rows.length ? rows.map(r=>plCardHtml(r)).join('') : '<div class="pl-empty-col">해당 없음</div>'}
+    </div>`;
+  }).join('')}</div>`;
+
+  wrap.innerHTML = `${noteHtml}${chips}${sumHtml}${boardHtml}`;
   window._plItemsById = {}; withMeta.forEach(x=>window._plItemsById[x._type+':'+x['ID']] = x);
-  window._plLogs = {lead: isLead?log:[], mat: isLead?[]:log};
-
-  if(isLead){
-    /* 연구영업: 기존과 동일하게 5단계 칸반 보드 */
-    const sumHtml = `<div class="pl-sum">${PL_STAGES.map(s=>`
-      <div class="pl-sum-card"><div class="l"><i style="background:${s.color}"></i>${esc(s.key)}</div><div class="n">${stageCounts[s.key]||0}</div></div>
-    `).join('')}</div>`;
-
-    const boardHtml = `<div class="pl-board">${PL_STAGES.map(s=>{
-      const rows = filtered.filter(x=>(x['진행단계']||'발굴')===s.key);
-      return `<div class="pl-col">
-        <div class="pl-col-head" style="--stagecolor:${s.color}"><i></i><b>${esc(s.key)}</b><span>${rows.length}건</span></div>
-        ${rows.length ? rows.map(r=>plCardHtml(r)).join('') : '<div class="pl-empty-col">해당 없음</div>'}
-      </div>`;
-    }).join('')}</div>`;
-
-    wrap.innerHTML = `${noteHtml}${chips}${sumHtml}${boardHtml}`;
-    return;
-  }
-
-  /* 원료영업: 왼쪽에 원료명을 나열하고, 원료를 선택하면 그 원료의 업체(공급사)들을
-     협상중/샘플·단가협의/계약완료/보류·중단 단계별로 묶어서 히스토리와 함께 보여준다.
-     (원료 하나에 공급사 후보가 여러 곳 붙는 실제 소싱 흐름에 맞춘 구조) */
-  const matGroups = {};
-  filtered.forEach(x=>{
-    const key = x._name || '(이름 없음)';
-    (matGroups[key] = matGroups[key] || []).push(x);
-  });
-  const matNames = Object.keys(matGroups);
-  window._plMatNames = matNames;
-  if(!plMatSelected || !matGroups[plMatSelected]) plMatSelected = matNames[0] || null;
-
-  const listHtml = matNames.length ? matNames.map((name,i)=>{
-    const rows = matGroups[name];
-    const stale = rows.some(r=>r._days!==null && r._days>=staleCut);
-    return `<div class="pl-mat-item ${name===plMatSelected?'on':''}" onclick="plSelectMaterial(${i})">
-      <div class="pl-mat-item-name">${esc(name)}</div>
-      <div class="pl-mat-item-meta">${rows.length}개 업체${stale?' · <span class="pl-mat-stale">⚠️ 지연</span>':''}</div>
-    </div>`;
-  }).join('') : '<div class="pl-empty-col">해당 없음</div>';
-
-  window._plMatLog = log;
-  const selRows = plMatSelected ? matGroups[plMatSelected] : [];
-  const detailBody = plMatSelected ? PL_STAGES.map(s=>{
-    const rows = selRows.filter(r=>(r['진행단계']||'발굴')===s.key);
-    if(!rows.length) return '';
-    return `<div class="pl-mat-stage-group">
-      <div class="pl-mat-stage-head" style="--stagecolor:${s.color}"><i></i>${esc(s.matLabel)}<span>${rows.length}건</span></div>
-      ${rows.map(r=>plMatSupplierCard(r)).join('')}
-    </div>`;
-  }).join('') || '<div class="pl-empty-col">해당 단계에 업체가 없습니다.</div>' : '<div class="pl-empty-col">왼쪽에서 원료를 선택하세요.</div>';
-
-  const detailHtml = `${plMatSelected ? `<div class="pl-mat-detail-title">🧫 ${esc(plMatSelected)}</div>` : ''}${detailBody}`;
-
-  const explorerHtml = `<div class="pl-mat-explorer">
-    <div class="pl-mat-list">${listHtml}</div>
-    <div class="pl-mat-detail">${detailHtml}</div>
-  </div>`;
-
-  wrap.innerHTML = `${noteHtml}${chips}${explorerHtml}`;
-}
-function plMatSupplierCard(r){
-  const dLabel = r._days===null ? '기록없음' : `D+${r._days}`;
-  const dCls = (r._days!==null && r._days<30) ? 'ok' : '';
-  const updTxt = r['최근업데이트일'] ? `최근 업데이트 ${String(r['최근업데이트일']).slice(5).replace('-', '.')}` : '최근 업데이트 -';
-  const logs = (window._plMatLog||[]).filter(l=>String(l['ID'])===String(r['ID']));
-  logs.sort((a,b)=> String(b['날짜']||'').localeCompare(String(a['날짜']||'')));
-  const historyHtml = logs.length
-    ? logs.map(l=>`<div class="pl-mh-item"><span class="pl-mh-date">${esc(l['날짜']||'날짜 미상')}</span>${esc(l['내용']||'')}</div>`).join('')
-    : (r['비고'] ? `<div class="pl-mh-item"><span class="pl-mh-date">비고</span>${esc(r['비고'])}</div>` : '<div class="pl-mh-empty">등록된 히스토리가 없습니다.</div>');
-  const editUrl = appsheetMaterialUrl(r['ID']);
-  return `<div class="pl-mat-supplier">
-    <div class="pl-mat-supplier-head">
-      <b>${esc(r._partner||'공급사 미정')}</b>
-      <span class="pl-updrow-mini">${updTxt}</span>
-      <span class="pl-dbadge ${dCls}">${dLabel}</span>
-      ${editUrl ? `<a class="pl-mat-edit-link" href="${editUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="AppSheet에서 수정하거나 삭제할 수 있습니다 (화면 상단 휴지통 아이콘)">✏️ 수정/삭제</a>` : ''}
-    </div>
-    <div class="pl-mat-history">${historyHtml}</div>
-  </div>`;
+  window._plLogs = {lead:leadLog, mat:[]};
 }
 function plCardHtml(r){
   const dLabel = r._days===null ? '기록없음' : `D+${r._days}`;
   const dCls = (r._days!==null && r._days<30) ? 'ok' : '';
   const updTxt = r['최근업데이트일'] ? `최근 업데이트 ${String(r['최근업데이트일']).slice(5).replace('-', '.')}` : '최근 업데이트 -';
-  const editBtn = `<a class="pl-card-edit" href="${r._type==='lead' ? appsheetLeadUrl(r['ID']) : appsheetMaterialUrl(r['ID'])}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="AppSheet에서 수정하거나 삭제할 수 있습니다 (화면 상단 휴지통 아이콘)">✏️</a>`;
   return `<div class="pl-card" onclick="plOpenDetail('${r._type}','${esc(r['ID'])}')">
-    ${editBtn}
     <span class="pl-tag ${r._type==='lead'?'lead':'mat'}">${r._type==='lead'?'🧪 리드':'🧫 원료'}</span>
     <h4>${esc(r._name||'(이름 없음)')}</h4>
     <div class="pl-partner">${r._type==='lead'?'파트너사':'공급사'} · ${esc(r._partner||'미정')}</div>
@@ -1205,12 +828,10 @@ function plOpenDetail(type, id){
   const logs = (window._plLogs[type]||[]).filter(r=>String(r['ID'])===String(id));
   logs.sort((a,b)=> String(b['날짜']||'').localeCompare(String(a['날짜']||'')));
   const panel = document.getElementById('plDetailPanel');
-  const editUrl = type==='lead' ? appsheetLeadUrl(id) : appsheetMaterialUrl(id);
   panel.innerHTML = `
     <button class="pl-d-close" onclick="plCloseDetail()">✕</button>
-    <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}${editUrl ? `<a href="${editUrl}" target="_blank" rel="noopener" class="pl-edit-link" onclick="event.stopPropagation()" title="AppSheet 화면 상단의 휴지통 아이콘으로 삭제도 가능합니다">📱 AppSheet에서 수정·삭제</a>` : ''}</h3>
-    <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(plStageLabel(type, item['진행단계']))}</div>
-    ${item['비고'] ? `<div class="pl-d-note">📝 ${esc(item['비고'])}</div>` : ''}
+    <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}</h3>
+    <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(item['진행단계']||'발굴')}</div>
     <div class="pl-loghist">${logs.length ? logs.map(l=>`
       <div class="pl-lh-item"><div class="pl-lh-date">${esc(l['날짜']||'날짜 미상')}</div><div class="pl-lh-txt">${esc(l['내용']||'')}</div></div>
     `).join('') : '<div style="color:var(--muted);font-size:12.5px">등록된 업데이트 로그가 없습니다.</div>'}</div>
@@ -1346,7 +967,7 @@ function showEmptyDetail(){
     <p style="font-size:12px">왼쪽 목록에서 클릭하면 업무 목록·간트차트·스토리보드를 볼 수 있습니다</p>`;
 }
 
-function selectProj(pid){ selId=pid; renderPlist(); renderDetail(pid); }
+function selectProj(pid){ selId=pid; curView='task'; renderPlist(); renderDetail(pid); }
 
 /* ── DETAIL ── */
 function renderDetail(pid){
@@ -1481,7 +1102,7 @@ function buildTaskView(pid){
       const asg = (t['담당자']||'').trim();
       const asgHtml = asg ? `<span class="asg-chip"><span class="asg-avatar">${esc(asg[0])}</span>${esc(asg)}</span>` : '<span style="color:var(--muted)">-</span>';
       const tid = t['ID'] ?? t['업무ID'];
-      const trClick = tid ? ` class="tl-row${isHold(t)?' row-hold':''}" style="cursor:pointer" onclick="openTaskInAppSheet('${esc(tid)}',event)" title="클릭하면 AppSheet에서 이 업무를 바로 엽니다"` : ` class="${isHold(t)?'row-hold':''}"`;
+      const trClick = tid ? ` class="tl-row${isHold(t)?' row-hold':''}" style="cursor:pointer" onclick="openTaskInAppSheet('${esc(tid)}',event,'${esc(pid)}')" title="클릭하면 AppSheet에서 이 업무를 바로 엽니다"` : ` class="${isHold(t)?'row-hold':''}"`;
       return `<tr${trClick}>
         <td class="tl-name">${esc(t['업무명'])}</td>
         <td><span class="spill ${statusCls(t)}">${esc(statusLabel(t))}</span></td>
@@ -2105,7 +1726,7 @@ function drawGantt(pid){
       const durDays = subE ? Math.max(1, Math.round((subE-subS)/86400000)+1) : null;
       subLine = `<span class="glsub">${gdshort(subS)}${durDays?` · ${durDays}일`:''}</span>`;
     }
-    const rowClick = (!isCat && row.id) ? ` onclick="openTaskInAppSheet('${esc(row.id)}',event)" style="cursor:pointer" title="${esc(row.lb)} — 클릭하면 AppSheet에서 이 업무를 바로 엽니다"` : ` title="${esc(row.lb)}"`;
+    const rowClick = (!isCat && row.id) ? ` onclick="openTaskInAppSheet('${esc(row.id)}',event,'${esc(pid)}')" style="cursor:pointer" title="${esc(row.lb)} — 클릭하면 AppSheet에서 이 업무를 바로 엽니다"` : ` title="${esc(row.lb)}"`;
     lh += `<div class="glrow${isCat?' glcat':''}"${rowClick}><span class="gllabel">${esc(row.lb)}</span>${subLine}</div>`;
     let cells='';
     cols.forEach((c,i)=>{
@@ -2140,7 +1761,7 @@ function drawGantt(pid){
       }
       let actBar='';
       const cursorCss = row.id ? 'cursor:pointer;' : '';
-      const barClick = row.id ? ` onclick="openTaskInAppSheet('${esc(row.id)}',event)"` : '';
+      const barClick = row.id ? ` onclick="openTaskInAppSheet('${esc(row.id)}',event,'${esc(pid)}')"` : '';
       if(row.as2 && row.ae2){
         const si=Math.max(0,gci(cols,row.as2)), ei=Math.min(cols.length-1,gci(cols,row.ae2));
         const left=si*cw+2, width=Math.max((ei-si+1)*cw-4,6);
@@ -2329,26 +1950,13 @@ function gToday(){
     const params = new URLSearchParams(location.search);
     const p = params.get('p') || params.get('id') || params.get('project');
     const view = params.get('view');
-    const scope = params.get('scope');
     if(p) selId = p;
     if(view && ['task','gantt','story','enroll'].includes(view)) curView = view;
-    if(scope) SCOPE = scope;
   }catch(e){}
 })();
 
-if(ID_TOKEN){
-  hideLoginGate(); loadData();
-} else if(AUTO_SILENT_OK && !OAUTH_REDIRECT_ERROR){
-  // 같은 날 안에서 토큰만 만료된 상태 — 로그인 화면 없이 조용히 재시도
-  trySilentLogin_();
-} else {
-  showLoginGate();
-  if(OAUTH_REDIRECT_ERROR){
-    const le = document.getElementById('loginError');
-    if(le){ le.style.display='block'; le.textContent = '로그인 실패: ' + OAUTH_REDIRECT_ERROR; }
-  }
-}
-setInterval(()=>{ if(ID_TOKEN) loadData(); }, 60000);
+loadData();
+setInterval(loadData, 60000);
 </script>
 </body>
 </html>
