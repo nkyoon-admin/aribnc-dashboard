@@ -514,7 +514,9 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 <script>
 // 2026.9.7 — 기존 URL(AKfycbzty...)이 유령 배포(어느 프로젝트에도 없는 배포 ID)로 확인되어
 // 실제로 살아있는 배포("원료영업 파이프라인" 버전, 라이브 테스트로 정상 동작 확인)로 긴급 롤백함.
-const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
+// 이 배포는 로그인 없이(익명) 접근 가능해서, URL만으로 아무나 데이터를 못 보게
+// 최소 보안장치로 비밀 토큰(?token=...)을 추가함 — 토큰 없으면 서버에서 바로 차단.
+const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec?token=Zj_3qsvQ0CGolOzmFFkTqohZDvvRMpgW';
 // 예전에 코드에 있던(실제로는 유령 배포였던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_BROKEN = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
