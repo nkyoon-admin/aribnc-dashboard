@@ -512,10 +512,11 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 </div>
 
 <script>
-// 실제 라이브 배포 URL (2026.8.27 버전 3 — 연구영업 리드 파이프라인 시트 연동 포함)
-const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
-// 이전(실제로는 배포되지 않았던) URL — 참고용으로만 남겨둠
-// const GANTT_API_URL_OLD = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
+// 2026.9.7 — 기존 URL(AKfycbzty...)이 유령 배포(어느 프로젝트에도 없는 배포 ID)로 확인되어
+// 실제로 살아있는 배포("원료영업 파이프라인" 버전, 라이브 테스트로 정상 동작 확인)로 긴급 롤백함.
+const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec';
+// 예전에 코드에 있던(실제로는 유령 배포였던) URL — 참고용으로만 남겨둠
+// const GANTT_API_URL_BROKEN = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
 /* ALE 프로젝트(ALE_로 시작하는 프로젝트ID)는 메인 앱의 Projects/Tasks가 아니라
    별도의 "유산균개발_프로젝트관리_ALE" 앱에서 직접 관리된다.
