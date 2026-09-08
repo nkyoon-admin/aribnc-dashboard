@@ -481,7 +481,7 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 
 <div class="hdr">
   <div>
-    <h1>📊 아리비앤씨 프로젝트 관리</h1>
+    <h1>📊 아리비앤씨 프로젝트 관리 <span id="scope-badge" style="display:none;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(169,127,63,.18);color:#a97f3f;vertical-align:middle;margin-left:6px">🦠 유산균 전용 보기</span></h1>
     <p>Projects / Tasks / Changes 시트 실시간 연동 · <span class="status-line" id="status">불러오는 중...</span></p>
   </div>
   <button class="hdr-btn" onclick="loadData()">🔄 새로고침</button>
@@ -538,7 +538,30 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 // 실제로 살아있는 배포("원료영업 파이프라인" 버전, 라이브 테스트로 정상 동작 확인)로 긴급 롤백함.
 // 이 배포는 로그인 없이(익명) 접근 가능해서, URL만으로 아무나 데이터를 못 보게
 // 최소 보안장치로 비밀 토큰(?token=...)을 추가함 — 토큰 없으면 서버에서 바로 차단.
-const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec?token=Zj_3qsvQ0CGolOzmFFkTqohZDvvRMpgW';
+//
+// 2026.9.8 — GAS 백엔드에 토큰별 스코프(TOKEN_MAP)가 추가됨: 기존 토큰은 전체 데이터,
+// 유산균 전용 토큰은 "유산균개발 프로젝트(ALE)"(P01_011) 하나만 반환하고 영업/원료
+// 파이프라인은 항상 빈 배열로 내려온다. 대시보드 접속 시 URL에 ?scope=ale 를 붙이면
+// (예: index.html?scope=ale) 이 유산균 전용 토큰으로 전환된다 — 사내 게시판 등에
+// 공유할 때는 이 파라미터가 붙은 링크를 쓰면 됨. 파라미터가 없으면 기존과 동일하게 전체 보기.
+const API_TOKENS = {
+  all: 'Zj_3qsvQ0CGolOzmFFkTqohZDvvRMpgW',
+  ale: 'wflGcTwUN0NFYGA9nKz_9wXfU65ppEZ7'
+};
+const IS_ALE_SCOPE = new URLSearchParams(location.search).get('scope') === 'ale';
+const GANTT_API_URL = 'https://script.google.com/macros/s/AKfycbySVcEpCzpRrvQzHb-Q3XjmmVb-pdjz6AgHCCn-MWl7f4gdbMYHknEAwczxMkDTRsxKaQ/exec?token='
+  + (IS_ALE_SCOPE ? API_TOKENS.ale : API_TOKENS.all);
+/* 유산균 전용 링크(?scope=ale)로 들어온 경우: 백엔드가 어차피 P01_011 프로젝트와
+   빈 파이프라인 배열만 내려주지만, UI에서도 헷갈리지 않도록 안내 배지를 보여주고
+   (어차피 항상 비어있는) 영업/원료 파이프라인 버튼은 아예 숨긴다. */
+(function initAleScopeUi(){
+  if(!IS_ALE_SCOPE) return;
+  document.title = '유산균 전용 · ' + document.title;
+  const badge = document.getElementById('scope-badge');
+  if(badge) badge.style.display = 'inline-block';
+  const plBtn = document.getElementById('pl-nav-btn');
+  if(plBtn) plBtn.style.display = 'none';
+})();
 // 예전에 코드에 있던(실제로는 유령 배포였던) URL — 참고용으로만 남겨둠
 // const GANTT_API_URL_BROKEN = 'https://script.google.com/macros/s/AKfycbztyPjoPThGHol6ofbfl81eoCOKlE7UxjzwWV-tuFH67hSKYOHzkuOhqD2EH62WC8jS/exec';
 const APPSHEET_URL = 'https://www.appsheet.com/start/ae92652b-e796-480b-8cfa-bbb20f0e9115';
