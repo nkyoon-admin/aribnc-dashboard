@@ -1070,7 +1070,10 @@ function showEmptyDetail(){
     <p style="font-size:12px">왼쪽 목록에서 클릭하면 업무 목록·간트차트·스토리보드를 볼 수 있습니다</p>`;
 }
 
-function selectProj(pid){ selId=pid; curView='task'; renderPlist(); renderDetail(pid); }
+/* 다른 프로젝트를 선택해도 지금 보고 있던 탭(업무 목록/간트차트/스토리보드/모집현황)을
+   그대로 유지한 채 넘어간다 — 간트를 보다가 다른 프로젝트로 넘기면 그 프로젝트의 간트로,
+   업무 목록을 보고 있었으면 업무 목록으로 이어진다. (curView를 여기서 초기화하지 않음) */
+function selectProj(pid){ selId=pid; renderPlist(); renderDetail(pid); }
 
 /* ── DETAIL ── */
 function renderDetail(pid){
