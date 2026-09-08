@@ -438,7 +438,9 @@ body{font-family:var(--font-main);background:var(--bg);color:var(--text);transit
 .pl-detail-panel{display:none;flex:0 0 480px;width:480px;max-width:48vw;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-y:auto;padding:28px;box-shadow:var(--sh);position:sticky;top:16px;max-height:calc(100vh - 120px)}
 .pl-detail-panel.open{display:block}
 .pl-detail-panel h3{font-size:21px;font-weight:800;margin-bottom:6px}
-.pl-detail-panel .pl-d-sub{font-size:14.5px;color:var(--muted);margin-bottom:18px}
+.pl-detail-panel .pl-d-sub{font-size:14.5px;color:var(--muted);margin-bottom:12px}
+.pl-d-edit{display:inline-block;font-size:13px;font-weight:600;color:var(--primary);background:var(--primary-lt);border:1px solid var(--primary);border-radius:8px;padding:6px 12px;text-decoration:none;margin-bottom:18px}
+.pl-d-edit:hover{opacity:.8}
 .pl-detail-panel .pl-d-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted)}
 .pl-loghist{border-left:2px solid var(--border);padding-left:18px;margin-left:4px}
 .pl-loghist .pl-lh-item{position:relative;margin-bottom:20px}
@@ -764,36 +766,55 @@ function togglePipeline(){
   if(pipelineMode) renderPipelineView();
 }
 function plSetFilter(f){ plFilter = f; renderPipelineView(); }
+/* 파이프라인 카드 "수정" 버튼용 AppSheet 딥링크.
+   영업리드_마스터/원료리드_마스터 테이블은 메인 앱의 데이터소스로 이미 연결되어 있어,
+   AppSheet가 테이블 추가 시 자동 생성하는 기본 Detail 뷰 이름("<테이블명>_Detail")을 그대로 사용한다.
+   (Tasks_Detail/Projects_Detail과 동일한 방식 — 실제 뷰 이름이 다르면 아래 값만 바꿔주면 됨) */
+const PL_DETAIL_VIEW = {lead:'영업리드_마스터_Detail', mat:'원료리드_마스터_Detail'};
+function plAppsheetUrl(type, id){
+  return `${APPSHEET_URL}#view=${encodeURIComponent(PL_DETAIL_VIEW[type])}&row=${encodeURIComponent(id)}`;
+}
 function renderPipelineView(){
   const wrap = document.getElementById('plMain');
-  /* 1단계: 연구영업(리드) 파이프라인만 우선 구축 — 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가 예정 */
-  const usingReal = RAW.pipelineLeads.length>0;
-  const leads = (usingReal ? RAW.pipelineLeads : PL_MOCK_LEADS).map(r=>({...r, _type:'lead'}));
-  const leadLog = usingReal ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG;
-  let items = [...leads];
+  const usingRealLead = RAW.pipelineLeads.length>0;
+  const usingRealMat = RAW.pipelineMaterials.length>0;
+  const leads = (usingRealLead ? RAW.pipelineLeads : PL_MOCK_LEADS).map(r=>({...r, _type:'lead'}));
+  const leadLog = usingRealLead ? RAW.pipelineLeadLog : PL_MOCK_LEAD_LOG;
+  const materials = (usingRealMat ? RAW.pipelineMaterials : PL_MOCK_MATERIALS).map(r=>({...r, _type:'mat'}));
+  const matLog = usingRealMat ? RAW.pipelineMaterialLog : PL_MOCK_MATERIAL_LOG;
+  let items = [...leads, ...materials];
   const staleCut = 30;
   const withMeta = items.map(it=>{
-    const name = it['연구명'];
-    const partner = it['파트너사'];
+    const name = it._type==='lead' ? it['연구명'] : it['원료명'];
+    const partner = it._type==='lead' ? it['파트너사'] : it['공급사'];
     const d = plDaysSince(it['최근업데이트일']);
-    const log = plLastLog(it['ID'], leadLog);
+    const log = plLastLog(it['ID'], it._type==='lead' ? leadLog : matLog);
     return {...it, _name:name, _partner:partner, _days:d, _log:log};
   });
   const nLead = leads.length;
+  const nMat = materials.length;
   const nStale = withMeta.filter(x=>x._days!==null && x._days>=staleCut).length;
   let filtered = withMeta;
   if(plFilter==='stale') filtered = withMeta.filter(x=>x._days!==null && x._days>=staleCut);
+  else if(plFilter==='lead') filtered = withMeta.filter(x=>x._type==='lead');
+  else if(plFilter==='mat') filtered = withMeta.filter(x=>x._type==='mat');
 
   const stageCounts = {};
   PL_STAGES.forEach(s=>stageCounts[s.key]=0);
   filtered.forEach(x=>{ const st = x['진행단계']||'발굴'; if(stageCounts[st]===undefined) stageCounts[st]=0; stageCounts[st]++; });
 
-  const noteHtml = usingReal
-    ? `<div class="pl-note">📋 "영업리드_마스터" 시트에 입력된 실제 데이터를 보여줍니다. (원료계약 파이프라인은 다음 단계에서 별도로 추가될 예정입니다)</div>`
-    : `<div class="pl-note">📌 1단계: 연구영업(리드) 파이프라인 예시 화면입니다 — Google Sheets/GAS 연동 전이라 방금 정리한 엑셀 내용을 그대로 보여드립니다. 연동되면 실제 데이터로 자동 전환됩니다. 원료계약 파이프라인은 다음 단계에서 별도 화면으로 추가할 예정입니다.</div>`;
+  const leadNoteTxt = usingRealLead
+    ? '📋 연구영업(리드) 파이프라인은 "영업리드_마스터" 시트의 실제 데이터입니다.'
+    : '📌 연구영업(리드) 파이프라인은 아직 연동 전이라 예시(목업) 데이터입니다.';
+  const matNoteTxt = usingRealMat
+    ? '📋 원료계약 파이프라인은 "원료리드_마스터" 시트의 실제 데이터입니다.'
+    : '📌 원료계약 파이프라인은 아직 연동 전이라 예시(목업) 데이터입니다.';
+  const noteHtml = `<div class="pl-note">${leadNoteTxt}<br>${matNoteTxt}</div>`;
 
   const chips = `<div class="pl-chips">
-    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nLead}</div>
+    <div class="pl-chip ${plFilter==='all'?'on':''}" onclick="plSetFilter('all')">전체 ${nLead+nMat}</div>
+    <div class="pl-chip ${plFilter==='lead'?'on':''}" onclick="plSetFilter('lead')">🧪 리드 ${nLead}</div>
+    <div class="pl-chip ${plFilter==='mat'?'on':''}" onclick="plSetFilter('mat')">🧫 원료 ${nMat}</div>
     <div class="pl-chip ${plFilter==='stale'?'on':''}" onclick="plSetFilter('stale')">⚠️ 30일 이상 업데이트 없음 ${nStale}</div>
   </div>`;
 
@@ -811,7 +832,7 @@ function renderPipelineView(){
 
   wrap.innerHTML = `${noteHtml}${chips}${sumHtml}${boardHtml}`;
   window._plItemsById = {}; withMeta.forEach(x=>window._plItemsById[x._type+':'+x['ID']] = x);
-  window._plLogs = {lead:leadLog, mat:[]};
+  window._plLogs = {lead:leadLog, mat:matLog};
 }
 function plCardHtml(r){
   const dLabel = r._days===null ? '기록없음' : `D+${r._days}`;
@@ -831,10 +852,12 @@ function plOpenDetail(type, id){
   const logs = (window._plLogs[type]||[]).filter(r=>String(r['ID'])===String(id));
   logs.sort((a,b)=> String(b['날짜']||'').localeCompare(String(a['날짜']||'')));
   const panel = document.getElementById('plDetailPanel');
+  const editUrl = plAppsheetUrl(type, item['ID']);
   panel.innerHTML = `
     <button class="pl-d-close" onclick="plCloseDetail()">✕</button>
     <h3>${type==='lead'?'🧪':'🧫'} ${esc(item._name)}</h3>
     <div class="pl-d-sub">${type==='lead'?'파트너사':'공급사'} · ${esc(item._partner||'미정')} · 진행단계: ${esc(item['진행단계']||'발굴')}</div>
+    <a class="pl-d-edit" href="${editUrl}" target="_blank" rel="noopener">📱 AppSheet에서 수정</a>
     <div class="pl-loghist">${logs.length ? logs.map(l=>`
       <div class="pl-lh-item"><div class="pl-lh-date">${esc(l['날짜']||'날짜 미상')}</div><div class="pl-lh-txt">${esc(l['내용']||'')}</div></div>
     `).join('') : '<div style="color:var(--muted);font-size:12.5px">등록된 업데이트 로그가 없습니다.</div>'}</div>
