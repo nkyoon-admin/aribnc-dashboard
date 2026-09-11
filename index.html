@@ -575,10 +575,19 @@ function appsheetTaskUrl(taskId, pid){
 }
 /* AppSheet에서 Projects 테이블의 특정 프로젝트 행을 바로 여는 딥링크 (프로젝트 메모의 "AppSheet에서 수정" 버튼용) */
 const PROJECTS_DETAIL_VIEW = 'Projects_Detail';
+/* 2026.9.11 — "유산균개발 프로젝트(ALE)"의 메인 Projects 시트상 ID는 P01_011이라 "ALE_" 접두사가
+   없어서 isAleId(pid)만으로는 절대 true가 안 되고, 그 결과 이 프로젝트의 "AppSheet에서 수정"이
+   항상 메인 앱(읽기/수정 가능하지만 이 프로젝트 담당이 아닌 앱)으로만 열리는 버그가 있었다.
+   이 프로젝트는 ALE 전용 앱에서 Projects 테이블 ID가 ALE_001로 별도 관리되므로,
+   명시적으로 매핑해서 ALE 전용 앱의 올바른 행으로 연결한다. */
+const ALE_PROJECT_ID_MAP = { 'P01_011': 'ALE_001' };
 function appsheetProjectUrl(pid){
   /* ALE 프로젝트는 ALE 전용 앱의 Projects_Detail 뷰로 열어야 실제로 수정(Edit)할 수 있다. */
-  const baseUrl = isAleId(pid) ? ALE_APPSHEET_URL : APPSHEET_URL;
-  return `${baseUrl}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(pid)}`;
+  const aleRowId = ALE_PROJECT_ID_MAP[pid];
+  const isAle = isAleId(pid) || !!aleRowId;
+  const baseUrl = isAle ? ALE_APPSHEET_URL : APPSHEET_URL;
+  const rowId = aleRowId || (isAleId(pid) ? pid.replace(/^ALE_/i, '') : pid);
+  return `${baseUrl}#view=${encodeURIComponent(PROJECTS_DETAIL_VIEW)}&row=${encodeURIComponent(rowId)}`;
 }
 function openTaskInAppSheet(taskId, e, pid){
   if(e) e.stopPropagation();
